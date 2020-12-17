@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,6 +44,7 @@ import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartFailureEvent;
 import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
+import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
@@ -301,6 +303,25 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}
 
+		/* Check configuration value : game_starter */
+		if (config.has("game_starter")) {
+			String starterName = config.getString("game_starter");
+			for (GameStarter starter : gameStarters) {
+				if (starter.getName().equalsIgnoreCase(starterName)) {
+					gameStarter = starter;
+					Log.info("NovaMain", "Game starter: " + gameStarter);
+
+					break;
+				}
+			}
+
+			if (gameStarter == null) {
+				Log.fatal("NovaMain", "Could not find game starter " + starterName + " (Case insensitive). Closing server!");
+				Bukkit.getServer().shutdown();
+				return;
+			}
+		}
+
 		/* Load modules */
 		ModuleManager.loadModule(NoEnderPearlDamage.class, noPearlDamage);
 		ModuleManager.loadModule(GameEndManager.class, true);
@@ -379,6 +400,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}, 40L, 40L);
 		heartbeatTask.start();
+
+		requireModule(NetherBoardScoreboard.class);
 	}
 
 	@Override
@@ -410,23 +433,29 @@ public class NovaMain extends NovaPlugin implements Listener {
 	}
 
 	public void sendToLobby(Player player, boolean useFallback) {
-		if (serverType.getReturnToServerType() != null && !useFallback) {
-			NovaNetworkManager.sendPlayerToServer(player.getUniqueId(), serverType.getReturnToServerType());
-		} else {
-			NovaNetworkManager.sendPlayerToServer(player.getUniqueId(), fallbackLobbyServerType);
+		try {
+			if (serverType.getReturnToServerType() != null && !useFallback) {
+				networkManager.sendPlayerToServer(player.getUniqueId(), serverType.getReturnToServerType());
+			} else {
+				networkManager.sendPlayerToServer(player.getUniqueId(), fallbackLobbyServerType);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.error("Failed to fetch target lobby server for player: " + player.getName());
 		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameLoad(GameLoadedEvent e) {
+		NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + e.getGame().getDisplayName());
+
 		if (gameStarter == null) {
 			Log.warn("NovaMain", "No game starter defined. The game will not auto start");
-			return;
+		} else {
+			Log.info("NovaMain", "Register events for game starter: " + gameStarter.getClass().getName());
+			gameStarter.onEnable();
+			Bukkit.getServer().getPluginManager().registerEvents(gameStarter, this);
 		}
-
-		Log.info("NovaMain", "Register events for game starter: " + gameStarter.getClass().getName());
-		gameStarter.onEnable();
-		Bukkit.getServer().getPluginManager().registerEvents(gameStarter, this);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

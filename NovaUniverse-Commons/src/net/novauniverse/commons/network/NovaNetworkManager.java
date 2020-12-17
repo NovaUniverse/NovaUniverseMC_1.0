@@ -14,6 +14,7 @@ import java.util.UUID;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.server.NovaServer;
 import net.novauniverse.commons.network.server.NovaServerType;
+import net.zeeraa.novacore.commons.NovaCommons;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.utils.RandomGenerator;
 
@@ -148,6 +149,15 @@ public class NovaNetworkManager {
 		return servers;
 	}
 
+	public NovaServer getServerById(int id) {
+		for (NovaServer server : servers) {
+			if (server.getId() == id) {
+				return server;
+			}
+		}
+		return null;
+	}
+
 	public List<NovaServerType> getServerTypes() {
 		return serverTypes;
 	}
@@ -177,6 +187,18 @@ public class NovaNetworkManager {
 			}
 		}
 		return null;
+	}
+
+	public List<NovaServer> getServerByType(NovaServerType type) {
+		List<NovaServer> result = new ArrayList<NovaServer>();
+
+		for (NovaServer server : servers) {
+			if (server.getServerType().equals(type)) {
+				result.add(server);
+			}
+		}
+
+		return result;
 	}
 
 	public static String generateServerName(NovaServerType serverType) throws SQLException {
@@ -262,8 +284,36 @@ public class NovaNetworkManager {
 		ps.close();
 	}
 
-	public static void sendPlayerToServer(UUID player, NovaServerType serverType) {
+	public boolean sendPlayerToServer(UUID player, NovaServerType serverType) throws SQLException {
 		Log.warn("NetworkManager", "Placeholder code NovaNetworkManager#sendPlayerToServer(UUID, NovaServerType) called");
+		NovaServer server = this.findServer(serverType);
+
+		if (server != null) {
+			return NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
+		}
+
+		return false;
+	}
+
+	public NovaServer findServer(NovaServerType type) throws SQLException {
+		NovaServer server = null;
+		
+		String sql = "CALL find_server(?)";
+		PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+		
+		ps.setInt(1, type.getId());
+		
+		ResultSet rs = ps.executeQuery();
+		
+		if(rs.next()) {
+			server = this.getServerById(rs.getInt("id"));
+			//System.out.println("Found server " + rs.getString("name"));
+		}
+		
+		rs.close();
+		ps.close();
+		
+		return server;
 	}
 
 	public static boolean flagAsGameStarted(int serverId) throws SQLException {

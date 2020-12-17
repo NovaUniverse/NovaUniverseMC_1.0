@@ -1,18 +1,31 @@
 package net.novauniverse.bungeecord;
 
 import java.net.InetSocketAddress;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServer;
+import net.novauniverse.commons.network.server.NovaServerType;
 import net.zeeraa.novacore.bungeecord.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.bungeecord.task.AdvancedTask;
 import net.zeeraa.novacore.commons.database.DBConnection;
@@ -20,13 +33,18 @@ import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 
-public class NovaUniverseBungeecord extends NovaPlugin {
+public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 	private static NovaUniverseBungeecord instance;
 
 	private List<String> originalServers;
 
 	private Task networkUpdateTask;
+	private Task playerHeartbeatTask;
 	private NovaNetworkManager networkManager;
+
+	private NovaServerType lobbyType;
+
+	private String defaultServerName;
 
 	public static NovaUniverseBungeecord getInstance() {
 		return instance;
@@ -59,6 +77,22 @@ public class NovaUniverseBungeecord extends NovaPlugin {
 		NovaUniverseCommons.setDbConnection(dbc);
 
 		networkManager = new NovaNetworkManager();
+		try {
+			networkManager.update(true);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			Log.fatal("Failed to fetch servers from database");
+			return;
+		}
+
+		defaultServerName = config.getString("default_server_name");
+
+		lobbyType = networkManager.getServerTypeByName(config.getString("lobby_server_type"));
+		if (lobbyType == null) {
+			Log.fatal("Could not find lobby server type: " + config.getString("lobby_server_type"));
+			return;
+		}
+		Log.info("Using " + lobbyType.getDisplayName() + "(" + lobbyType.getName() + ") as lobby server type");
 
 		networkUpdateTask = new AdvancedTask(this, new Runnable() {
 			@Override
@@ -73,6 +107,26 @@ public class NovaUniverseBungeecord extends NovaPlugin {
 			}
 		}, 1, 1, TimeUnit.SECONDS);
 		networkUpdateTask.start();
+
+		playerHeartbeatTask = new AdvancedTask(new Runnable() {
+			@Override
+			public void run() {
+				for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+					try {
+						String sql = "UPDATE players SET is_online = 1, heartbeat_timestamp = CURRENT_TIMESTAMP WHERE uuid = ?";
+						PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+						ps.setString(1, player.getUniqueId().toString());
+						ps.executeUpdate();
+						ps.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}, 1L, TimeUnit.SECONDS);
+		playerHeartbeatTask.start();
+
+		getProxy().getPluginManager().registerListener(this, this);
 	}
 
 	private void updateServerList() {
@@ -85,7 +139,7 @@ public class NovaUniverseBungeecord extends NovaPlugin {
 		}
 
 		for (NovaServer server : networkManager.getServers()) {
-			//Log.trace("Checking server " + server.getName());
+			// Log.trace("Checking server " + server.getName());
 			old.remove(server.getName());
 
 			if (ProxyServer.getInstance().getServers().containsKey(server.getName())) {
@@ -108,6 +162,7 @@ public class NovaUniverseBungeecord extends NovaPlugin {
 
 	@Override
 	public void onDisable() {
+		Task.tryStopTask(playerHeartbeatTask);
 		Task.tryStopTask(networkUpdateTask);
 
 		try {
@@ -124,5 +179,81 @@ public class NovaUniverseBungeecord extends NovaPlugin {
 		getProxy().getScheduler().cancel(this);
 		getProxy().getPluginManager().unregisterListeners((Plugin) this);
 		getProxy().getPluginManager().unregisterCommands((Plugin) this);
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerJoin(ServerConnectEvent e) {
+		if (e.isCancelled()) {
+			return;
+		}
+
+		if (e.getTarget().getName().equalsIgnoreCase(defaultServerName)) {
+			try {
+				NovaServer targetServer = networkManager.findServer(lobbyType);
+
+				if (targetServer == null) {
+					e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Filed to fetch target server"));
+					Log.warn("Failed to fetch target server for player: " + e.getPlayer().getDisplayName());
+					return;
+				}
+
+				e.setTarget(ProxyServer.getInstance().getServerInfo(targetServer.getName()));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				Log.error("Failed to fetch target server for player " + e.getPlayer().getDisplayName());
+				e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Filed to fetch target server\nCaused by: " + ex.getClass().getName()));
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPostLogin(PostLoginEvent e) {
+		try {
+			String sql = "{CALL player_join_data(?, ?, ?)}";
+			CallableStatement cs = NovaUniverseCommons.getDbConnection().getConnection().prepareCall(sql);
+
+			cs.setString(1, e.getPlayer().getUniqueId().toString());
+			cs.setString(2, e.getPlayer().getName());
+			cs.setString(3, e.getPlayer().getSocketAddress().toString());
+
+			cs.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			Log.error("Failed to execute procedure player_join_data");
+			e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + ex.getClass().getName()));
+		}
+	}
+
+	@EventHandler
+	public void onServerConnected(ServerConnectedEvent e) {
+		NovaServer server = networkManager.getServerByName(e.getServer().getInfo().getName());
+
+		if (server != null) {
+			try {
+				String sql = "UPDATE players SET server_id = ? WHERE uuid = ?";
+				PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+
+				ps.setInt(1, server.getId());
+				ps.setString(2, e.getPlayer().getUniqueId().toString());
+
+				ps.executeUpdate();
+			} catch (Exception ex) {
+				// TODO: remove stack trace
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerDisconnect(PlayerDisconnectEvent e) {
+		try {
+			String sql = "UPDATE players SET is_online = 0, server_id = null WHERE uuid = ?";
+			PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+			ps.setString(1, e.getPlayer().getUniqueId().toString());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 }

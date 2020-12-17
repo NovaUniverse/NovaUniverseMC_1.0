@@ -1,6 +1,6 @@
-# =============================
-# -=-=-=  MySQL Settings =-=-=-
-# =============================
+# ============================
+# -=-=-= MySQL Settings =-=-=-
+# ============================
 # MySQL Database
 mysql:
     driver: com.mysql.jdbc.Driver
@@ -8,3 +8,11 @@ mysql:
     username: root
     password: root
     database: novauniverse
+
+# =============================
+# -=-=-= Server Settings =-=-=-
+# =============================
+lobby_server_type: lobby
+
+# The name of the default server configured in the settings for bungeecord 
+default_server_name: void
