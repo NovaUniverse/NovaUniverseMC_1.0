@@ -39,6 +39,7 @@
 		<module>NovaUniverse-Commons</module>
 		<module>NovaUniverse-Bungeecord</module>
 		<module>NovaUniverse-SpigotMain</module>
+		<module>NovaUniverse-Lobby</module>
 	</modules>
 
 	<repositories>
