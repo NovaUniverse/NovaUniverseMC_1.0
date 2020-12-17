@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.novauniverse</groupId>
+	<artifactId>novauniverse-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>PARENT</version>
+	<name>NovaUniverse Parent</name>
+	
+	<url>https://novauniverse.net</url>
+	
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        
+        <maven-compiler-plugin-version>3.8.0</maven-compiler-plugin-version>
+		<maven-shade-plugin-version>3.2.4</maven-shade-plugin-version>
+		<maven-source-plugin-version>3.2.0</maven-source-plugin-version>
+		<maven-javadoc-plugin-version>3.2.0</maven-javadoc-plugin-version>
+		<maven-deploy-plugin-version>3.0.0-M1</maven-deploy-plugin-version>
+	</properties>
+	
+	<build>
+    </build>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>zeeraas-snapshots</id>
+			<url>https://nexus.zeeraa.net/repository/maven-snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>zeeraas-releases</id>
+			<url>https://nexus.zeeraa.net/repository/maven-releases/</url>
+		</repository>
+	</distributionManagement>
+	
+	<modules>
+		<module>NovaUniverse-Commons</module>
+		<module>NovaUniverse-Bungeecord</module>
+		<module>NovaUniverse-SpigotMain</module>
+	</modules>
+
+	<repositories>
+	</repositories>
+
+	<dependencies>
+	</dependencies>
+</project>

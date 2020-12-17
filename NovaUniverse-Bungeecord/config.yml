@@ -1,0 +1,10 @@
+# =============================
+# -=-=-=  MySQL Settings =-=-=-
+# =============================
+# MySQL Database
+mysql:
+    driver: com.mysql.jdbc.Driver
+    host: jdbc:mysql://localhost
+    username: root
+    password: root
+    database: novauniverse

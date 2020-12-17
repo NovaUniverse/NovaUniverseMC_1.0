@@ -1,0 +1,5 @@
+main: net.novauniverse.bungeecord.NovaUniverseBungeecord
+name: NovaUniverseBungeecord
+version: 1.0.0
+authors: [Zeeraa]
+depends: [NovaCore]
