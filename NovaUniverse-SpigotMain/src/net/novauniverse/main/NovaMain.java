@@ -92,6 +92,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		/* Set initial variables */
 		NovaMain.instance = this;
 
 		inErrorState = false;
@@ -102,9 +103,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 		gameStarters = new ArrayList<GameStarter>();
 		gameStarter = null;
 
-		gameStarters.add(new DefaultCountdownGameStarter());
-
+		/* Create config.yml */
 		saveDefaultConfig();
+
+		/* Load game starters */
+		gameStarters.add(new DefaultCountdownGameStarter());
 
 		/* Language files */
 		Log.info("NovaMain", "Loading language files...");
