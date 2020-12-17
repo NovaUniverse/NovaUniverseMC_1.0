@@ -19,13 +19,17 @@
 * `no_pearl_damage` (Optional) set to true to disable pearl damage
 * `compass_tracker_mode` (Optional) set what compass tracker mode to use. If this is not set the server wont use compass trackers. See Compass Trackers for avaliable options
 * `compass_tracker_strict_mode` (Optional) Set to false to disable strict mode
-
-
+* `game_starter` (Optional) Set the game starter to use. See Game Starters for avaliable options
+* `use_teams` (Optional) Set to true to use teams
 ---
 # Team Managers
 Here are the available team managers
-* `skywars_solo`
+* `skywars_solo` Solo teams used for skywars
 
 # Compass Trackers
 Here are the available compass trackers
-* `closest_player`
+* `closest_player` Track closest player ignoring teams
+
+# Game Starters
+Here are the available game starters
+* `DefaultCountdownGameStarter` Starts the countdown when a certain amount of players has joined

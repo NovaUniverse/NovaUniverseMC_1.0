@@ -3,7 +3,10 @@ package net.novauniverse.main;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +21,8 @@ import org.json.JSONObject;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
+import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
+import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
 import net.novauniverse.main.modules.WinMessage;
@@ -33,20 +38,27 @@ import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTracker;
+import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartFailureEvent;
+import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
 
 public class NovaMain extends NovaPlugin implements Listener {
 	private static NovaMain instance;
+
 	private NovaNetworkManager networkManager;
 
 	private NovaServerType serverType;
 	private NovaServerType fallbackLobbyServerType;
 	private String serverName;
 	private String serverHost;
+
+	private List<GameStarter> gameStarters;
+	private GameStarter gameStarter;
 
 	private int serverId;
 
@@ -74,6 +86,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		return inErrorState;
 	}
 
+	public GameStarter getGameStarter() {
+		return gameStarter;
+	}
+
 	@Override
 	public void onEnable() {
 		NovaMain.instance = this;
@@ -82,6 +98,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		heartbeatTask = null;
 		serverId = -1;
+
+		gameStarters = new ArrayList<GameStarter>();
+		gameStarter = null;
+
+		gameStarters.add(new DefaultCountdownGameStarter());
 
 		saveDefaultConfig();
 
@@ -115,6 +136,24 @@ public class NovaMain extends NovaPlugin implements Listener {
 			return;
 		}
 
+		/* Load game lobby maps */
+		File gameLobbyFolder = new File(this.getDataFolder().getPath() + File.separator + "GameLobby");
+		File worldFolder = new File(this.getDataFolder().getPath() + File.separator + "Worlds");
+
+		try {
+			FileUtils.forceMkdir(getDataFolder());
+			FileUtils.forceMkdir(gameLobbyFolder);
+			FileUtils.forceMkdir(worldFolder);
+
+			Log.info("NovaMain", "Reading lobby files from " + gameLobbyFolder.getPath());
+			GameLobby.getInstance().getMapReader().loadAll(gameLobbyFolder, worldFolder);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			Log.fatal("NovaMain", "Failed to setup data directory");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
+
 		/* Check configuration value : mysql */
 
 		JSONObject mysql = config.getJSONObject("mysql");
@@ -144,6 +183,14 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Log.fatal("NovaMain", "Failed to fetch server types. Closing server!");
 			Bukkit.getServer().shutdown();
 			return;
+		}
+
+		/* Check configuration value: use_teams */
+		if (config.has("use_teams")) {
+			if (config.getBoolean("use_teams")) {
+				Log.info("NovaMain", "Using teams");
+				GameManager.getInstance().setUseTeams(true);
+			}
 		}
 
 		/* Check configuration value : host */
@@ -358,6 +405,18 @@ public class NovaMain extends NovaPlugin implements Listener {
 		} else {
 			NovaNetworkManager.sendPlayerToServer(player.getUniqueId(), fallbackLobbyServerType);
 		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onGameLoad(GameLoadedEvent e) {
+		if (gameStarter == null) {
+			Log.warn("NovaMain", "No game starter defined. The game will not auto start");
+			return;
+		}
+
+		Log.info("NovaMain", "Register events for game starter: " + gameStarter.getClass().getName());
+		gameStarter.onEnable();
+		Bukkit.getServer().getPluginManager().registerEvents(gameStarter, this);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
