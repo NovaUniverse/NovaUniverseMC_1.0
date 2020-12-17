@@ -68,6 +68,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	private boolean inErrorState;
 
+	private boolean disableScoreboard;
+
 	public static NovaMain getInstance() {
 		return instance;
 	}
@@ -92,6 +94,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		return gameStarter;
 	}
 
+	public boolean isDisableScoreboard() {
+		return disableScoreboard;
+	}
+
 	@Override
 	public void onEnable() {
 		/* Set initial variables */
@@ -104,6 +110,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		gameStarters = new ArrayList<GameStarter>();
 		gameStarter = null;
+
+		disableScoreboard = false;
 
 		/* Create config.yml */
 		saveDefaultConfig();
@@ -159,7 +167,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			return;
 		}
 
-		/* Check configuration value : mysql */
+		/* Check configuration value: mysql */
 
 		JSONObject mysql = config.getJSONObject("mysql");
 
@@ -190,6 +198,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 			return;
 		}
 
+		/* Check configuration value: disable_scoreboard */
+		if (config.has("disable_scoreboard")) {
+			disableScoreboard = config.getBoolean("disable_scoreboard");
+		}
+
 		/* Check configuration value: use_teams */
 		if (config.has("use_teams")) {
 			if (config.getBoolean("use_teams")) {
@@ -206,7 +219,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			return;
 		}
 
-		/* Check configuration value : server_type */
+		/* Check configuration value: server_type */
 		serverType = networkManager.getServerTypeByName(config.getString("server_type"));
 		if (serverType == null) {
 			Log.fatal("NovaMain", "Missing or invalid server type configured in novaconfig.json. Closing server!");
@@ -214,7 +227,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			return;
 		}
 
-		/* Check configuration value : global_lobby_fallback */
+		/* Check configuration value: global_lobby_fallback */
 		if (!config.has("global_lobby_fallback")) {
 			Log.fatal("NovaMain", "Missing global_lobby_fallback in novaconfig.json. Closing server!");
 			Bukkit.getServer().shutdown();
@@ -256,7 +269,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		Log.info("NovaMain", strictMode ? "Using strict mode for compass tracker" : "Strict mode disabled for compass trackers");
 		CompassTracker.getInstance().setStrictMode(strictMode);
 
-		/* Check configuration value : team_manager */
+		/* Check configuration value: team_manager */
 		if (config.has("team_manager")) {
 			String teamManagerName = config.getString("team_manager");
 			TeamManager teamManager = null;
@@ -292,7 +305,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Log.info("NovaMain", "No team manager defined");
 		}
 
-		/* Check configuration value : no_pearl_damage */
+		/* Check configuration value: no_pearl_damage */
 		boolean noPearlDamage = false;
 
 		if (config.has("no_pearl_damage")) {
@@ -303,7 +316,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}
 
-		/* Check configuration value : game_starter */
+		/* Check configuration value: game_starter */
 		if (config.has("game_starter")) {
 			String starterName = config.getString("game_starter");
 			for (GameStarter starter : gameStarters) {
@@ -330,7 +343,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
-		/* Check configuration value : name_override and generate name */
+		/* Check configuration value: name_override and generate name */
 		if (config.has("name_override")) {
 			String name = config.getString("name_override");
 			Log.warn("NovaMain", "Overriding naming scheme with: " + name);
@@ -401,7 +414,9 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}, 40L, 40L);
 		heartbeatTask.start();
 
-		requireModule(NetherBoardScoreboard.class);
+		if (!disableScoreboard) {
+			requireModule(NetherBoardScoreboard.class);
+		}
 	}
 
 	@Override
@@ -447,7 +462,9 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameLoad(GameLoadedEvent e) {
-		NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + e.getGame().getDisplayName());
+		if (!disableScoreboard) {
+			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + e.getGame().getDisplayName());
+		}
 
 		if (gameStarter == null) {
 			Log.warn("NovaMain", "No game starter defined. The game will not auto start");

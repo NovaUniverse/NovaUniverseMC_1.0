@@ -40,6 +40,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 	private Task networkUpdateTask;
 	private Task playerHeartbeatTask;
+	private Task cleanupTask;
 	private NovaNetworkManager networkManager;
 
 	private NovaServerType lobbyType;
@@ -53,6 +54,10 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		NovaUniverseBungeecord.instance = this;
+
+		networkUpdateTask = null;
+		playerHeartbeatTask = null;
+		cleanupTask = null;
 
 		saveDefaultConfiguration();
 
@@ -126,6 +131,22 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		}, 1L, TimeUnit.SECONDS);
 		playerHeartbeatTask.start();
 
+		cleanupTask = new AdvancedTask(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					String sql = "{CALL cleanup()}";
+					CallableStatement cs = NovaUniverseCommons.getDbConnection().getConnection().prepareCall(sql);
+					cs.execute();
+					cs.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					Log.error("Failed to execute procedure cleanup");
+				}
+			}
+		}, 10, TimeUnit.SECONDS);
+		cleanupTask.start();
+
 		getProxy().getPluginManager().registerListener(this, this);
 	}
 
@@ -164,6 +185,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 	public void onDisable() {
 		Task.tryStopTask(playerHeartbeatTask);
 		Task.tryStopTask(networkUpdateTask);
+		Task.tryStopTask(cleanupTask);
 
 		try {
 			if (NovaUniverseCommons.getDbConnection() != null) {
@@ -192,7 +214,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 				NovaServer targetServer = networkManager.findServer(lobbyType);
 
 				if (targetServer == null) {
-					e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Filed to fetch target server"));
+					e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Could not find a lobby for you"));
 					Log.warn("Failed to fetch target server for player: " + e.getPlayer().getDisplayName());
 					return;
 				}
@@ -201,7 +223,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				Log.error("Failed to fetch target server for player " + e.getPlayer().getDisplayName());
-				e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Filed to fetch target server\nCaused by: " + ex.getClass().getName()));
+				e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Could not find a lobby for you\nCaused by: " + ex.getClass().getName()));
 			}
 		}
 	}
@@ -238,8 +260,6 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 				ps.executeUpdate();
 			} catch (Exception ex) {
-				// TODO: remove stack trace
-				ex.printStackTrace();
 			}
 		}
 	}

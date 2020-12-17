@@ -36,6 +36,7 @@ import net.zeeraa.novacore.spigot.module.modules.multiverse.MultiverseManager;
 import net.zeeraa.novacore.spigot.module.modules.multiverse.MultiverseWorld;
 import net.zeeraa.novacore.spigot.module.modules.multiverse.PlayerUnloadOption;
 import net.zeeraa.novacore.spigot.module.modules.multiverse.WorldUnloadOption;
+import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 
 public class NovaUniverseLobby extends NovaPlugin {
@@ -48,7 +49,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 	private File jumpPadFile;
 	private File kotlFile;
 	private File worldFile;
-
+	
 	private Location spawnLocation;
 
 	public Location getSpawnLocation() {
@@ -70,10 +71,10 @@ public class NovaUniverseLobby extends NovaPlugin {
 				JSONFileUtils.createEmpty(jumpPadFile, JSONFileType.JSONArray);
 			}
 
-			if(!kotlFile.exists()) {
+			if (!kotlFile.exists()) {
 				JSONFileUtils.createEmpty(kotlFile, JSONFileType.JSONArray);
 			}
-			
+
 			// Configuration
 			this.saveDefaultConfig();
 
@@ -89,10 +90,14 @@ public class NovaUniverseLobby extends NovaPlugin {
 
 			// Require modules
 			this.requireModule(GUIManager.class);
+			this.requireModule(NetherBoardScoreboard.class);
 
 			// Register modules
 			this.loadModule(DoubleJump.class, true);
 			this.loadModule(LobbyMessages.class, true);
+
+			// Scoreboard
+			NetherBoardScoreboard.getInstance().setDefaultTitle(ChatColor.YELLOW + "" + ChatColor.BOLD + "Lobby");
 
 			// Lobby spawn
 			ConfigurationSection spawnSection = this.getConfig().getConfigurationSection("spawn_location");
@@ -134,8 +139,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 					}
 				}
 			}.runTaskLater(this, 1L);
-			
-			
+
 			this.loadModule(KingOfTheLadderManager.class, true);
 			KingOfTheLadderManager.getInstance().loadArenas(kotlFile);
 		} catch (Exception e) {
@@ -159,7 +163,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onVersionIndependantPlayerAchievementAwarded(VersionIndependantPlayerAchievementAwardedEvent e) {
 		e.setCancelled(true);

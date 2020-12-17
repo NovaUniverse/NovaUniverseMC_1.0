@@ -25,7 +25,9 @@ Optional values are not required but might be needed for special server configur
 * `use_teams` (Optional) Set to true to use teams
 ---
 ## Additional options
-* `skywars_solo_team_count` (Optional) set the amount of solo teams for the skywars_solo team manager
+* `skywars_solo_team_count` (Optional) Set the amount of solo teams for the skywars_solo team manager
+* `disable_scoreboard` (Optional) Disable the scoreboard
+
 ---
 
 # Team Managers
