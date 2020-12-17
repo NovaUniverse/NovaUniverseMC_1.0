@@ -260,7 +260,14 @@ public class NovaMain extends NovaPlugin implements Listener {
 			TeamManager teamManager = null;
 			switch (teamManagerName.toLowerCase()) {
 			case "skywars_solo":
-				teamManager = new SkywarsSoloTeamManager();
+				int skywarsSoloTeamCount = 12;
+
+				if (config.has("skywars_solo_team_count")) {
+					skywarsSoloTeamCount = config.getInt("skywars_solo_team_count");
+				}
+
+				Log.info("NovaMain", "Using team count of: " + skywarsSoloTeamCount + " for skywars solo teams");
+				teamManager = new SkywarsSoloTeamManager(skywarsSoloTeamCount);
 				break;
 
 			default:

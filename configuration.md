@@ -1,4 +1,6 @@
 # Configuration values for NovaMain
+Optional values are not required but might be needed for special server configurations
+
 ---
 ## Database options
 * `mysql.driver` The MySQL driver to use
@@ -22,6 +24,10 @@
 * `game_starter` (Optional) Set the game starter to use. See Game Starters for avaliable options
 * `use_teams` (Optional) Set to true to use teams
 ---
+## Additional options
+* `skywars_solo_team_count` (Optional) set the amount of solo teams for the skywars_solo team manager
+---
+
 # Team Managers
 Here are the available team managers
 * `skywars_solo` Solo teams used for skywars

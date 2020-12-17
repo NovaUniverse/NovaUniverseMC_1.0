@@ -1,0 +1,5 @@
+name: NovaUniverseLobby
+main: net.novauniverse.lobby.NovaUniverseLobby
+description: Novauniverse Lobby
+version: 1.0
+depend: [NovaCore, WorldEdit, NovaMain]

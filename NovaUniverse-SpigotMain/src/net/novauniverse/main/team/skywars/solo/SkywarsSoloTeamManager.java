@@ -12,8 +12,8 @@ import net.zeeraa.novacore.spigot.teams.Team;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
 
 public class SkywarsSoloTeamManager extends TeamManager implements Listener {
-	public SkywarsSoloTeamManager() {
-		for (int i = 0; i < 12; i++) {
+	public SkywarsSoloTeamManager(int teamCount) {
+		for (int i = 0; i < teamCount; i++) {
 			SkywarsSoloTeam team = new SkywarsSoloTeam();
 
 			teams.add(team);

@@ -1,0 +1,8 @@
+spawn_location:
+   world: "lobby_world"
+   x: 0.5
+   y: 60.0
+   z: 0.5
+   yaw: 0
+   pitch: 0
+   
