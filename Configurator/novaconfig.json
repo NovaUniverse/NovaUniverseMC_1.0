@@ -1,11 +1,21 @@
 {
+	"novamain": {
+		"mysql": {
+			"driver": "com.mysql.jdbc.Driver",
+			"host": "jdbc:mysql://localhost",
+			"username": "root",
+			"password": "root",
+			"database": "novauniverse"
+		}
+	},
 	"plugins": {
-		"AdvancedBan": {
+		"NovaUniverseBungeecord": {
 			"config.yml": {
-				"MySQL.IP": "127.0.0.1",
-				"MySQL.DB-Name": "NovaUniverse_AdvancedBan",
-				"MySQL.Username": "root",
-				"MySQL.Password": "root"
+				"mysql.host": "jdbc:mysql://localhost",
+				"mysql.database": "novauniverse",
+				"mysql.username": "root",
+				"mysql.password": "root",
+				"lobby_server_type": "lobby"
 			}
 		},
 		"LuckPerms": {
@@ -15,6 +25,23 @@
 				"data.database": "novauniverse_luckperms",
 				"data.username": "root",
 				"data.password": "root"
+			}
+		},
+		"AdvancedBan": {
+			"config.yml": {
+				"UseMySQL": true,
+				"MySQL.IP": "127.0.0.1",
+				"MySQL.DB-Name": "novauniverse_advancedban",
+				"MySQL.Username": "root",
+				"MySQL.Password": "root"
+			}
+		},
+		"CoreProtect": {
+			"config.yml": {
+				"mysql-host": "127.0.0.1",
+				"mysql-database": "coreprotect",
+				"mysql-username": "root",
+				"mysql-password": "root"
 			}
 		}
 	}
