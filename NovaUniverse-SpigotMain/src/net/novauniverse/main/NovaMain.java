@@ -24,6 +24,7 @@ import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
+import net.novauniverse.main.commands.ShowServersCommand;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.modules.GameEndManager;
@@ -31,6 +32,7 @@ import net.novauniverse.main.modules.NoEnderPearlDamage;
 import net.novauniverse.main.modules.WinMessage;
 import net.novauniverse.main.team.skywars.solo.SkywarsSoloTeamManager;
 import net.novauniverse.main.trackers.ClosestPlayerTracker;
+import net.zeeraa.novacore.commons.NovaCommons;
 import net.zeeraa.novacore.commons.database.DBConnection;
 import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
@@ -68,6 +70,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private int serverId;
 
 	private Task heartbeatTask;
+	private Task updateServersTask;
 
 	private boolean inErrorState;
 
@@ -458,17 +461,36 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}, 40L, 40L);
 		heartbeatTask.start();
 
+		updateServersTask = new SimpleTask(this, new Runnable() {
+			public void run() {
+				NovaCommons.getAbstractAsyncManager().runAsync(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							networkManager.update(false);
+						} catch (SQLException e) {
+							Log.error("NovaMain", "Failed to update server list");
+							e.printStackTrace();
+						}
+					}
+				}, 1L);
+			}
+		}, 40L, 40L);
+		updateServersTask.start();
+
 		if (!disableScoreboard) {
 			requireModule(NetherBoardScoreboard.class);
 		}
 
 		CommandRegistry.registerCommand(new JoinServerGroupCommand());
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
+		CommandRegistry.registerCommand(new ShowServersCommand());
 	}
 
 	@Override
 	public void onDisable() {
 		Task.tryStopTask(heartbeatTask);
+		Task.tryStopTask(updateServersTask);
 
 		if (serverId > 0) {
 			try {

@@ -151,6 +151,7 @@ public class NovaNetworkManager {
 
 	public NovaServer getServerById(int id) {
 		for (NovaServer server : servers) {
+			Log.trace(server.getName() + " " + server.getId() + " = " + id);
 			if (server.getId() == id) {
 				return server;
 			}
@@ -285,8 +286,9 @@ public class NovaNetworkManager {
 	}
 
 	public boolean sendPlayerToServer(UUID player, NovaServerType serverType) throws SQLException {
-		Log.warn("NetworkManager", "Placeholder code NovaNetworkManager#sendPlayerToServer(UUID, NovaServerType) called");
 		NovaServer server = this.findServer(serverType);
+
+		//Log.trace("NetworkManager", "NovaNetworkManager.sendPlayerToServer() " + server);
 
 		if (server != null) {
 			return NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
@@ -297,22 +299,23 @@ public class NovaNetworkManager {
 
 	public NovaServer findServer(NovaServerType type) throws SQLException {
 		NovaServer server = null;
-		
+
 		String sql = "CALL find_server(?)";
 		PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
-		
+
 		ps.setInt(1, type.getId());
-		
+
 		ResultSet rs = ps.executeQuery();
-		
-		if(rs.next()) {
+
+		if (rs.next()) {
 			server = this.getServerById(rs.getInt("id"));
-			//System.out.println("Found server " + rs.getString("name"));
+			//Log.trace("NetworkMagaer", "Found server " + rs.getString("name"));
+			//Log.trace("NetworkManager", "" + server);
 		}
-		
+
 		rs.close();
 		ps.close();
-		
+
 		return server;
 	}
 
