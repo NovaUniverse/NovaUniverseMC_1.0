@@ -30,6 +30,17 @@ else:
 	exit(0)
 
 
+has_overrides = False
+overrides = None
+
+if os.path.isfile(os.curdir + '/novaoverrides.json'):
+	print("[INFO] Reading overrides file")
+	with open(os.curdir + '/novaoverrides.json') as json_file:
+		overrides = json.load(json_file)
+		has_overrides = True
+
+print(overrides)
+
 print("[INFO] Found config at: " + config_file_path)
 
 plugin_path = os.curdir + "/plugins"
@@ -74,6 +85,13 @@ with open(config_file_path) as json_file:
 
 				for value in values:
 					new_value = values[value]
+
+					if has_overrides:
+						if plugin in overrides:
+							if config_file in overrides[plugin]:
+								if value in overrides[plugin][config_file]:
+									print("[INFO] Using override for " + value + " in " + config_file + " for plugin " + plugin)
+									new_value = overrides[plugin][config_file][value]
 					
 					reqursive_replacer(value, data, new_value)
 
