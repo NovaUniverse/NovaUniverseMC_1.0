@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import json
 import ruamel.yaml
-
+import pprint
 import sys
 
 def reqursive_replacer(key, data, new_value):
@@ -28,7 +28,6 @@ elif os.path.isfile(os.curdir + '/novaconfig.json'):
 else:
 	print("[ERR] novaconfig.json not found")
 	exit(0)
-
 
 has_overrides = False
 overrides = None

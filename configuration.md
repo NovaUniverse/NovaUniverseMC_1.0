@@ -3,6 +3,7 @@ Optional values are not required but might be needed for special server configur
 
 ---
 ## Database options
+* `use_global_settings` (Optional) This options enables reading database config from novaconfig.json in the home directory. This is enabled by default and has to be set to false to disable
 * `mysql.driver` The MySQL driver to use
 * `mysql.host` The host of the database server
 * `mysql.username` The username for the database
@@ -13,7 +14,7 @@ Optional values are not required but might be needed for special server configur
 * `server_type` The server type this server is running
 * `name_override` (Optional) Override the name generation and use the providen name instead
 * `host` The host that should be used to access this server thru bungeecord
-* `global_lobby_fallback` The lobby to use if the seerver type does not define a lobby or if the server fail to send the player to that server
+* `global_lobby_fallback` The lobby to use if the server type does not define a lobby or if the server fail to send the player to that server
 
 ---
 ## Game options

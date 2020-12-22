@@ -172,7 +172,48 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		/* Check configuration value: mysql */
 
-		JSONObject mysql = config.getJSONObject("mysql");
+		JSONObject mysql = null;
+
+		/* Check novaconfig.json */
+		boolean useGlobal = true;
+
+		if (config.has("use_global_settings")) {
+			if (!config.getBoolean("use_global_settings")) {
+				useGlobal = true;
+			}
+		}
+
+		if (useGlobal) {
+			File globalConfigFile = new File(System.getProperty("user.home") + File.separator + "novaconfig.json");
+
+			if (globalConfigFile.exists()) {
+				Log.info("NovaMain", "Reading global config file");
+				try {
+					JSONObject global = JSONFileUtils.readJSONObjectFromFile(globalConfigFile);
+
+					if (global.has("novamain")) {
+						JSONObject novaMain = global.getJSONObject("novamain");
+						if (novaMain.has("mysql")) {
+							Log.info("NovaMain", "Using MySQL connection from novaconfig.json");
+							mysql = novaMain.getJSONObject("mysql");
+						} else {
+							Log.error("NovaMain", "novaconfig.json does not contain field: novamain");
+						}
+					} else {
+						Log.error("NovaMain", "novaconfig.json does not contain field: novamain");
+					}
+				} catch (Exception e) {
+					Log.error("NovaMain", "Failed to read novaconfig.json file " + globalConfigFile.getPath());
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (mysql == null) {
+			mysql = config.getJSONObject("mysql");
+		}
+
+		/* Connect to the MySQL database */
 
 		DBCredentials dbCredentials = new DBCredentials(mysql.getString("driver"), mysql.getString("host"), mysql.getString("username"), mysql.getString("password"), mysql.getString("database"));
 
@@ -420,7 +461,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		if (!disableScoreboard) {
 			requireModule(NetherBoardScoreboard.class);
 		}
-		
+
 		CommandRegistry.registerCommand(new JoinServerGroupCommand());
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 	}
