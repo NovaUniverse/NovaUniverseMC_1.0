@@ -1,0 +1,12 @@
+{
+	"plugins": {
+		"AdvancedBan": {
+			"config.yml": {
+				"MySQL.IP": "127.0.0.1",
+				"MySQL.DB-Name": "NovaUniverse_AdvancedBan",
+				"MySQL.Username": "root",
+				"MySQL.Password": "root"
+			}
+		}
+	}
+}

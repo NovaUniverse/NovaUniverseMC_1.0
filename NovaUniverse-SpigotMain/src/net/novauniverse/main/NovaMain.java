@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
+import net.novauniverse.main.commands.JoinServerGroupCommand;
+import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.modules.GameEndManager;
@@ -35,6 +37,7 @@ import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
+import net.zeeraa.novacore.spigot.command.CommandRegistry;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
@@ -130,7 +133,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}
 
 		/* Check configuration file */
-		File configFile = new File("novaconfig.json").getAbsoluteFile();
+		File configFile = new File("novaserver.json").getAbsoluteFile();
 
 		if (!configFile.exists()) {
 			Log.fatal("NovaMain", "Config file at " + configFile.getPath() + " does not exist. Closing server!");
@@ -417,6 +420,9 @@ public class NovaMain extends NovaPlugin implements Listener {
 		if (!disableScoreboard) {
 			requireModule(NetherBoardScoreboard.class);
 		}
+		
+		CommandRegistry.registerCommand(new JoinServerGroupCommand());
+		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 	}
 
 	@Override
