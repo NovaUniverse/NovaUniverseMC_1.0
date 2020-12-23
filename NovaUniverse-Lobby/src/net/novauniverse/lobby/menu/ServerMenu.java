@@ -23,7 +23,7 @@ public class ServerMenu {
 		
 		int startAt = 10;
 		
-		for()
+		
 		
 		player.openInventory(inventory);
 	}
