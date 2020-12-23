@@ -10,8 +10,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import net.novauniverse.lobby.NovaUniverseLobby;
+import net.novauniverse.lobby.serverselector.ServerSelectorItem;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.spigot.module.NovaModule;
+import net.zeeraa.novacore.spigot.module.modules.customitems.CustomItemManager;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.utils.PlayerUtils;
 
@@ -68,6 +70,8 @@ public class NovaUniverseSpawn extends NovaModule implements Listener {
 			PlayerUtils.clearPlayerInventory(e.getPlayer());
 			PlayerUtils.clearPotionEffects(e.getPlayer());
 			PlayerUtils.resetPlayerXP(e.getPlayer());
+			
+			e.getPlayer().getInventory().addItem(CustomItemManager.getInstance().getCustomItemStack(ServerSelectorItem.class, e.getPlayer()));
 		}
 	}
 

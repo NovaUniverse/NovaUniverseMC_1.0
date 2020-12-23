@@ -26,12 +26,12 @@
 	
 	<distributionManagement>
 		<snapshotRepository>
-			<id>zeeraas-snapshots</id>
-			<url>https://nexus.zeeraa.net/repository/maven-snapshots/</url>
+			<id>zeeraas-private-snapshots</id>
+			<url>https://nexus.zeeraa.net/repository/maven-private-snapshots/</url>
 		</snapshotRepository>
 		<repository>
-			<id>zeeraas-releases</id>
-			<url>https://nexus.zeeraa.net/repository/maven-releases/</url>
+			<id>zeeraas-private-releases</id>
+			<url>https://nexus.zeeraa.net/repository/maven-private-releases/</url>
 		</repository>
 	</distributionManagement>
 	

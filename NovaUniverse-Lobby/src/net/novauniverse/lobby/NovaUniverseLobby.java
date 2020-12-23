@@ -19,6 +19,7 @@ import org.json.JSONException;
 
 import net.novauniverse.lobby.messages.LobbyMessages;
 import net.novauniverse.lobby.misc.DoubleJump;
+import net.novauniverse.lobby.serverselector.ServerSelectorItem;
 import net.novauniverse.lobby.spawn.NovaUniverseSpawn;
 import net.novauniverse.lobby.spawn.NovaUniverseSpawnProtection;
 import net.novauniverse.lobby.spawn.kotl.KingOfTheLadderManager;
@@ -29,6 +30,7 @@ import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.abstraction.events.VersionIndependantPlayerAchievementAwardedEvent;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
+import net.zeeraa.novacore.spigot.module.modules.customitems.CustomItemManager;
 import net.zeeraa.novacore.spigot.module.modules.gui.GUIManager;
 import net.zeeraa.novacore.spigot.module.modules.jumppad.JumpPadManager;
 import net.zeeraa.novacore.spigot.module.modules.jumppad.command.JumpPadCommand;
@@ -91,7 +93,8 @@ public class NovaUniverseLobby extends NovaPlugin {
 			// Require modules
 			this.requireModule(GUIManager.class);
 			this.requireModule(NetherBoardScoreboard.class);
-
+			this.requireModule(CustomItemManager.class);
+			
 			// Register modules
 			this.loadModule(DoubleJump.class, true);
 			this.loadModule(LobbyMessages.class, true);
@@ -120,6 +123,9 @@ public class NovaUniverseLobby extends NovaPlugin {
 			this.loadModule(NovaUniverseSpawn.class, true);
 			this.loadModule(NovaUniverseSpawnProtection.class, true);
 
+			// Custom items
+			CustomItemManager.getInstance().addCustomItem(ServerSelectorItem.class);
+			
 			// Jump pads
 
 			this.requireModule(JumpPadManager.class);
