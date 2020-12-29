@@ -25,7 +25,7 @@ public class ReloadNetworkManagerCommand extends NovaCommand {
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
 		try {
-			NovaMain.getInstance().getNetworkManager().update(false);
+			NovaMain.getInstance().getNetworkManager().update(true);
 			sender.sendMessage(ChatColor.GREEN + "ok");
 			return true;
 		} catch (SQLException e) {

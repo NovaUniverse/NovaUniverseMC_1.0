@@ -44,7 +44,7 @@ public class NovaNetworkManager {
 		Map<NovaServerType, Integer> returnServerType = new HashMap<NovaServerType, Integer>();
 
 		while (rs.next()) {
-			NovaServerType newServerType = new NovaServerType(rs.getInt("id"), rs.getString("name"), rs.getString("display_name"), rs.getInt("soft_player_limit"), rs.getInt("hard_player_limit"), rs.getInt("target_player_count"), rs.getBoolean("is_minigame"), null, rs.getString("server_naming_scheme"));
+			NovaServerType newServerType = new NovaServerType(rs.getInt("id"), rs.getString("name"), rs.getString("display_name"), rs.getInt("soft_player_limit"), rs.getInt("hard_player_limit"), rs.getInt("target_player_count"), rs.getBoolean("is_minigame"), null, rs.getString("server_naming_scheme"), rs.getString("lore"), rs.getBoolean("show_in_server_list"));
 			serverTypesNew.add(newServerType);
 			int returnType = rs.getInt("return_to_server_type_id");
 

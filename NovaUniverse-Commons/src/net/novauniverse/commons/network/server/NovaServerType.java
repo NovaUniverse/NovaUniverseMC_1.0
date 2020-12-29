@@ -10,8 +10,10 @@ public class NovaServerType {
 	private boolean isMinigame;
 	private NovaServerType returnToServerType;
 	private String serverNamingScheme;
+	private String lore;
+	private boolean showInServerList;
 	
-	public NovaServerType(int id, String name, String displayName, int softPlayerLimit, int hardPlayerLimit, int targetPlayerCount, boolean isMinigame, NovaServerType returnToServerType, String serverNamingScheme) {
+	public NovaServerType(int id, String name, String displayName, int softPlayerLimit, int hardPlayerLimit, int targetPlayerCount, boolean isMinigame, NovaServerType returnToServerType, String serverNamingScheme, String lore, boolean showInServerList) {
 		this.id = id;
 		this.name = name;
 		this.displayName = displayName;
@@ -21,6 +23,8 @@ public class NovaServerType {
 		this.isMinigame = isMinigame;
 		this.returnToServerType = returnToServerType;
 		this.serverNamingScheme = serverNamingScheme;
+		this.lore = lore;
+		this.showInServerList = showInServerList;
 	}
 
 	public int getId() {
@@ -61,6 +65,14 @@ public class NovaServerType {
 	
 	public String getServerNamingScheme() {
 		return serverNamingScheme;
+	}
+	
+	public String getLore() {
+		return lore;
+	}
+	
+	public boolean isShowInServerList() {
+		return showInServerList;
 	}
 
 	/**

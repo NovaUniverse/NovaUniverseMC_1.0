@@ -9,7 +9,7 @@
 		<sourceDirectory>src</sourceDirectory>
 
 		<resources>
-			
+
 		</resources>
 
 		<plugins>
@@ -99,6 +99,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>me.kaimu.hastebin</groupId>
+				<artifactId>hastebin.java</artifactId>
+				<version>1.0.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -115,6 +123,13 @@
 			<artifactId>novacore-commons</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>me.kaimu.hastebin</groupId>
+			<artifactId>hastebin.java</artifactId>
+			<version>1.0.0</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.json/json -->

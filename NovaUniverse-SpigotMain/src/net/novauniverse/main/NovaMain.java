@@ -22,15 +22,20 @@ import org.json.JSONObject;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
+import net.novauniverse.main.commands.Base64DumpItemCommand;
 import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
+import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.modules.GameEndManager;
+import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
+import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
 import net.novauniverse.main.team.skywars.solo.SkywarsSoloTeamManager;
+import net.novauniverse.main.team.solo.SoloTeamManager;
 import net.novauniverse.main.trackers.ClosestPlayerTracker;
 import net.zeeraa.novacore.commons.NovaCommons;
 import net.zeeraa.novacore.commons.database.DBConnection;
@@ -72,6 +77,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private Task heartbeatTask;
 	private Task updateServersTask;
 
+	private boolean useTeams;
+
 	private boolean inErrorState;
 
 	private boolean disableScoreboard;
@@ -92,6 +99,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		return serverType;
 	}
 
+	public void setInErrorState(boolean inErrorState) {
+		this.inErrorState = inErrorState;
+	}
+
 	public boolean isInErrorState() {
 		return inErrorState;
 	}
@@ -104,6 +115,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		return disableScoreboard;
 	}
 
+	public boolean isUseTeams() {
+		return useTeams;
+	}
+
 	@Override
 	public void onEnable() {
 		/* Set initial variables */
@@ -113,6 +128,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		heartbeatTask = null;
 		serverId = -1;
+
+		useTeams = false;
 
 		gameStarters = new ArrayList<GameStarter>();
 		gameStarter = null;
@@ -253,6 +270,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		/* Check configuration value: use_teams */
 		if (config.has("use_teams")) {
 			if (config.getBoolean("use_teams")) {
+				useTeams = true;
 				Log.info("NovaMain", "Using teams");
 				GameManager.getInstance().setUseTeams(true);
 			}
@@ -332,6 +350,17 @@ public class NovaMain extends NovaPlugin implements Listener {
 				teamManager = new SkywarsSoloTeamManager(skywarsSoloTeamCount);
 				break;
 
+			case "solo":
+				int soloTeamCount = getServerType().getSoftPlayerLimit();
+
+				if (config.has("solo_team_count")) {
+					skywarsSoloTeamCount = config.getInt("solo_team_count");
+				}
+
+				Log.info("NovaMain", "Using team count of: " + soloTeamCount + " for solo teams");
+				teamManager = new SoloTeamManager(soloTeamCount);
+				break;
+
 			default:
 				Log.error("NovaMain", "Invalid team manager: " + teamManager);
 				break;
@@ -386,6 +415,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 		ModuleManager.loadModule(NoEnderPearlDamage.class, noPearlDamage);
 		ModuleManager.loadModule(GameEndManager.class, true);
 		ModuleManager.loadModule(WinMessage.class, true);
+		ModuleManager.loadModule(TabList.class, true);
+		ModuleManager.loadModule(GameStartScoreboardCountdown.class);
+
+		/* Game specific */
+		ModuleManager.loadModule(MissileWarsHandler.class);
 
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -482,9 +516,17 @@ public class NovaMain extends NovaPlugin implements Listener {
 			requireModule(NetherBoardScoreboard.class);
 		}
 
+		NetherBoardScoreboard.getInstance().setDefaultTitle(ChatColor.AQUA + "" + ChatColor.BOLD + "NovaUniverse");
+		NetherBoardScoreboard.getInstance().setGlobalLine(14, ChatColor.YELLOW + "https://novauniverse.net");
+
 		CommandRegistry.registerCommand(new JoinServerGroupCommand());
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 		CommandRegistry.registerCommand(new ShowServersCommand());
+		CommandRegistry.registerCommand(new Base64DumpItemCommand());
+
+		if (gameStarter != null) {
+			ModuleManager.enable(GameStartScoreboardCountdown.class);
+		}
 	}
 
 	@Override
@@ -541,6 +583,15 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Log.info("NovaMain", "Register events for game starter: " + gameStarter.getClass().getName());
 			gameStarter.onEnable();
 			Bukkit.getServer().getPluginManager().registerEvents(gameStarter, this);
+		}
+
+		switch (e.getGame().getName().toLowerCase()) {
+		case "missilewars":
+			ModuleManager.enable(MissileWarsHandler.class);
+			break;
+
+		default:
+			break;
 		}
 	}
 

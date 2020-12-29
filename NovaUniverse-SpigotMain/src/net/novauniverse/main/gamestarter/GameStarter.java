@@ -18,4 +18,9 @@ public abstract class GameStarter implements Listener {
 	 * Called before the events are registered
 	 */
 	public abstract void onEnable();
+
+	public abstract boolean shouldShowCountdown();
+
+	public abstract long getTimeLeft();
+
 }

@@ -16,7 +16,7 @@
 				<includes>
 					<include>plugin.yml</include>
 					<include>config.yml</include>
-					
+
 					<include>lang/en-us.json</include>
 				</includes>
 			</resource>
@@ -139,6 +139,20 @@
 		<dependency>
 			<groupId>net.zeeraa.novacore</groupId>
 			<artifactId>novacore-spigot</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.novauniverse</groupId>
+			<artifactId>novauniverse-commons</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.novauniverse</groupId>
+			<artifactId>NovaMissileWars</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

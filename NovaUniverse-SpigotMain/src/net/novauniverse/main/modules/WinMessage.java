@@ -20,16 +20,13 @@ public class WinMessage extends NovaModule implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerWin(PlayerWinEvent e) {
-		if (NovaCore.getInstance().getTeamManager() == null) {
-			return;
-		}
-
 		ChatColor color = ChatColor.AQUA;
+		if (NovaCore.getInstance().getTeamManager() != null) {
+			Team team = NovaCore.getInstance().getTeamManager().getPlayerTeam(e.getPlayer());
 
-		Team team = NovaCore.getInstance().getTeamManager().getPlayerTeam(e.getPlayer());
-
-		if (team != null) {
-			color = team.getTeamColor();
+			if (team != null) {
+				color = team.getTeamColor();
+			}
 		}
 
 		// Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "" + ChatColor.BOLD +

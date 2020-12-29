@@ -111,7 +111,15 @@
 			<id>enginehub-maven</id>
 			<url>http://maven.enginehub.org/repo/</url>
 		</repository>
+
+		<repository>
+			<id>citizensnpcs</id>
+			<url>http://repo.citizensnpcs.co/</url>
+		</repository>
 	</repositories>
+
+
+
 
 	<dependencies>
 		<!--Spigot API -->
@@ -126,6 +134,20 @@
 			<groupId>net.zeeraa.novacore</groupId>
 			<artifactId>novacore-spigot</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.novauniverse</groupId>
+			<artifactId>novauniverse-spigot-main</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.citizensnpcs</groupId>
+			<artifactId>citizensapi</artifactId>
+			<version>2.0.27-SNAPSHOT</version>
+			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
 

@@ -27,6 +27,7 @@ Optional values are not required but might be needed for special server configur
 ---
 ## Additional options
 * `skywars_solo_team_count` (Optional) Set the amount of solo teams for the skywars_solo team manager
+* `solo_team_count` (Optional) Set the amount of solo teams for the solo team manager
 * `disable_scoreboard` (Optional) Disable the scoreboard
 
 ---
@@ -34,6 +35,7 @@ Optional values are not required but might be needed for special server configur
 # Team Managers
 Here are the available team managers
 * `skywars_solo` Solo teams used for skywars
+* `solo` Solo teams for other games
 
 # Compass Trackers
 Here are the available compass trackers
