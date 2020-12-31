@@ -34,6 +34,7 @@ import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
+import net.novauniverse.main.servericons.ServerIconIndex;
 import net.novauniverse.main.team.skywars.solo.SkywarsSoloTeamManager;
 import net.novauniverse.main.team.solo.SoloTeamManager;
 import net.novauniverse.main.trackers.ClosestPlayerTracker;
@@ -42,6 +43,7 @@ import net.zeeraa.novacore.commons.database.DBConnection;
 import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.commons.utils.JSONFileType;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
@@ -170,6 +172,23 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Log.fatal("NovaMain", "Could not read config file at " + configFile.getPath() + ". Closing server!");
 			Bukkit.getServer().shutdown();
 			return;
+		}
+
+		/* Check server icons file */
+		File iconsFile = new File(getDataFolder().getPath() + File.separator + "icons.json");
+
+		try {
+			if (!iconsFile.exists()) {
+				Log.info("NovaMain", "Creating icons.json");
+				JSONFileUtils.createEmpty(iconsFile, JSONFileType.JSONObject);
+			}
+
+			JSONObject icons = JSONFileUtils.readJSONObjectFromFile(iconsFile);
+
+			ServerIconIndex.load(icons);
+		} catch (Exception e) {
+			Log.error("NovaMain", "Failed to read / create icons.json. " + e.getClass().getName() + " " + e.getMessage());
+			e.printStackTrace();
 		}
 
 		/* Load game lobby maps */

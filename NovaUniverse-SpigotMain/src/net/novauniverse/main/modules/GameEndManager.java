@@ -1,6 +1,7 @@
 package net.novauniverse.main.modules;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +31,19 @@ public class GameEndManager extends NovaModule implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
+		switch (e.getReason()) {
+		case OPERATOR_ENDED_GAME:
+			Bukkit.getServer().broadcastMessage(ChatColor.RED + "Game was ended by a staff member");
+			break;
+
+		case TIME:
+			Bukkit.getServer().broadcastMessage(ChatColor.RED + "Game was ended due to time limit reached");
+			break;
+			
+		default:
+			break;
+		}
+
 		Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
 			@Override
 			public void run() {

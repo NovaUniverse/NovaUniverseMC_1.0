@@ -1,0 +1,6 @@
+DELIMITER $$
+CREATE PROCEDURE `cleanup_dead_servers`()
+BEGIN
+	DELETE FROM servers WHERE TIMESTAMPDIFF(MINUTE, servers.heartbeat, CURRENT_TIMESTAMP) >= 3;
+END$$
+DELIMITER ;

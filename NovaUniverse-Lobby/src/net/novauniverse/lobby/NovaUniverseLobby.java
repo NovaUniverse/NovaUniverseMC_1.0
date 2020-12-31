@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import net.novauniverse.lobby.menu.ServerMenuPlayerCountUpdater;
 import net.novauniverse.lobby.messages.LobbyMessages;
 import net.novauniverse.lobby.misc.DoubleJump;
 import net.novauniverse.lobby.npc.NPCServerListener;
@@ -107,6 +108,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 			this.loadModule(DoubleJump.class, true);
 			this.loadModule(LobbyMessages.class, true);
 			this.loadModule(NPCServerListener.class, true);
+			this.loadModule(ServerMenuPlayerCountUpdater.class, true);
 
 			// Scoreboard
 			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + "Lobby");

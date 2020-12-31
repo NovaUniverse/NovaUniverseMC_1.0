@@ -15,8 +15,6 @@ import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.spigot.module.modules.gui.GUIAction;
 import net.zeeraa.novacore.spigot.module.modules.gui.callbacks.GUIClickCallback;
-import net.zeeraa.novacore.spigot.module.modules.gui.holders.GUIHolder;
-import net.zeeraa.novacore.spigot.module.modules.gui.holders.GUIReadOnlyHolder;
 import net.zeeraa.novacore.spigot.utils.ItemBuilder;
 
 public class ServerMenu {
@@ -25,7 +23,7 @@ public class ServerMenu {
 	public static final int GUI_NEWLINE_INCREMENT = 2;
 	
 	public static void show(Player player) {
-		GUIHolder holder = new GUIReadOnlyHolder();
+		ServerMenuHolder holder = new ServerMenuHolder();
 		Inventory inventory = Bukkit.getServer().createInventory(holder, 9 * 6, "Servers");
 
 		ItemStack backgroundItem = new ItemBuilder(Material.STAINED_GLASS_PANE).setName(" ").build();
@@ -47,6 +45,8 @@ public class ServerMenu {
 
 			inventory.setItem(slot, stack);
 
+			holder.getServerTypeSlots().put(serverType, slot);
+			
 			holder.addClickCallback(slot, new GUIClickCallback() {
 				@Override
 				public GUIAction onClick(Inventory clickedInventory, Inventory inventory, HumanEntity entity, int clickedSlot, SlotType slotType, InventoryAction clickType) {

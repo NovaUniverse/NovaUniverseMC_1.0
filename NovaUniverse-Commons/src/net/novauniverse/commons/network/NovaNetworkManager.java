@@ -132,6 +132,28 @@ public class NovaNetworkManager {
 		ps.close();
 	}
 
+	public void updatePlayerCount() throws SQLException {
+		PreparedStatement ps;
+		ResultSet rs;
+
+		ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement("CALL get_player_count()");
+		rs = ps.executeQuery();
+
+		while (rs.next()) {
+			int typeId = rs.getInt("server_type_id");
+			int playerCount = rs.getInt("player_count");
+
+			NovaServerType type = getServerTypeByID(typeId);
+
+			if (type != null) {
+				type.setPlayerCount(playerCount);
+			}
+		}
+
+		rs.close();
+		ps.close();
+	}
+
 	public void clearServers() {
 		servers.clear();
 	}
@@ -143,6 +165,7 @@ public class NovaNetworkManager {
 	public void update(boolean clean) throws SQLException {
 		updateTypes(clean);
 		updateServers(clean);
+		updatePlayerCount();
 	}
 
 	public List<NovaServer> getServers() {
@@ -288,7 +311,8 @@ public class NovaNetworkManager {
 	public boolean sendPlayerToServer(UUID player, NovaServerType serverType) throws SQLException {
 		NovaServer server = this.findServer(serverType);
 
-		//Log.trace("NetworkManager", "NovaNetworkManager.sendPlayerToServer() " + server);
+		// Log.trace("NetworkManager", "NovaNetworkManager.sendPlayerToServer() " +
+		// server);
 
 		if (server != null) {
 			return NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
@@ -309,8 +333,8 @@ public class NovaNetworkManager {
 
 		if (rs.next()) {
 			server = this.getServerById(rs.getInt("id"));
-			//Log.trace("NetworkMagaer", "Found server " + rs.getString("name"));
-			//Log.trace("NetworkManager", "" + server);
+			// Log.trace("NetworkMagaer", "Found server " + rs.getString("name"));
+			// Log.trace("NetworkManager", "" + server);
 		}
 
 		rs.close();

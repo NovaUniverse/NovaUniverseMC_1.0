@@ -44,9 +44,11 @@ public class DefaultCountdownGameStarter extends GameStarter {
 				int c = getGroupCount();
 
 				if (c >= 2) {
-					if (GameManager.getInstance().getCountdown().isCountdownRunning()) {
+					if (!GameManager.getInstance().getCountdown().isCountdownRunning()) {
 						Log.info(getName(), "Starting countdown since there are 2 or more players / teams online");
-						GameManager.getInstance().getCountdown().startCountdown();
+						if (!GameManager.getInstance().getCountdown().startCountdown()) {
+							Log.warn("DefaultCountdownGameStarter", "GameCountdown#startCountdown() returned false. The server might be in an invalid game state and might require a restart");
+						}
 					}
 				} else {
 					if (GameManager.getInstance().getCountdown().isCountdownRunning()) {
@@ -75,7 +77,7 @@ public class DefaultCountdownGameStarter extends GameStarter {
 	private void disable() {
 		Task.tryStopTask(checkTask);
 	}
-	
+
 	private int getGroupCount() {
 		if (GameManager.getInstance().hasGame()) {
 			// Special case for missile wars
@@ -107,36 +109,4 @@ public class DefaultCountdownGameStarter extends GameStarter {
 	public long getTimeLeft() {
 		return GameManager.getInstance().getCountdown().getTimeLeft();
 	}
-
-	/*
-	 * private void startCountdown() { if (timer != null) { timer.cancel(); timer =
-	 * null; }
-	 * 
-	 * timer = new BasicTimer(START_TIME_LESS_THAN_HALF);
-	 * 
-	 * timer.addTickCallback(new TickCallback() {
-	 * 
-	 * @Override public void execute(long timeLeft) {
-	 * //System.out.println(timeLeft); if (timeLeft <= 10) { if (timeLeft > 0) {
-	 * Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Starting in: " +
-	 * ChatColor.AQUA + timeLeft); } } } });
-	 * 
-	 * timer.addFinishCallback(new Callback() {
-	 * 
-	 * @Override public void execute() { try { disable();
-	 * GameManager.getInstance().start(); } catch (IOException e) {
-	 * Log.fatal("DefaultCountdownGameStarter", "Failed to start game! " +
-	 * e.getClass().getName() + " " + e.getMessage());
-	 * Bukkit.getServer().broadcastMessage(ChatColor.DARK_RED +
-	 * "Failed to start the game! Caused by: " + e.getClass().getName() + " " +
-	 * e.getMessage());
-	 * 
-	 * NovaMain.getInstance().setInErrorState(true);
-	 * 
-	 * e.printStackTrace(); } } });
-	 * 
-	 * timer.start();
-	 * 
-	 * running = true; }
-	 */
 }
