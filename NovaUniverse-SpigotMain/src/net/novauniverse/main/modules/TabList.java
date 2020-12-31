@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.novauniverse.main.NovaMain;
+import net.zeeraa.novacore.commons.ServerType;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.spigot.NovaCore;
@@ -14,6 +15,10 @@ import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 public class TabList extends NovaModule {
 	private Task updateTask;
 
+	private boolean switching;
+	private int colorAnimationIndex = 0;
+	private ChatColor[] colorAnimation = { ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW, ChatColor.GREEN };
+
 	@Override
 	public String getName() {
 		return "TabList";
@@ -21,9 +26,17 @@ public class TabList extends NovaModule {
 
 	@Override
 	public void onLoad() {
+		switching = false;
 		updateTask = new SimpleTask(NovaMain.getInstance(), new Runnable() {
 			@Override
 			public void run() {
+				switching = !switching;
+				colorAnimationIndex++;
+
+				if (colorAnimationIndex >= colorAnimation.length) {
+					colorAnimationIndex = 0;
+				}
+
 				double tps = -1;
 				try {
 					tps = NovaCore.getInstance().getVersionIndependentUtils().getRecentTps()[0];
@@ -34,6 +47,10 @@ public class TabList extends NovaModule {
 					String header = "";
 					String footer = "";
 
+					header += ChatColor.AQUA + "" + "-=-=-=[" + colorAnimation[colorAnimationIndex] + "" + ChatColor.BOLD + " NovaUniverse " + ChatColor.RESET + ChatColor.AQUA + "]=-=-=-";
+					
+					header+="\n" +ChatColor.YELLOW + ""+ChatColor.BOLD + NovaMain.getInstance().getServerType().getDisplayName();
+					
 					int ping = NovaCore.getInstance().getVersionIndependentUtils().getPlayerPing(player);
 
 					footer += ChatColor.AQUA + "-=[ ";
@@ -48,7 +65,7 @@ public class TabList extends NovaModule {
 					NovaCore.getInstance().getVersionIndependentUtils().sendTabList(player, header, footer);
 				}
 			}
-		}, 10);
+		}, 7L);
 	}
 
 	@Override
@@ -60,5 +77,4 @@ public class TabList extends NovaModule {
 	public void onDisable() throws Exception {
 		Task.tryStopTask(updateTask);
 	}
-
 }
