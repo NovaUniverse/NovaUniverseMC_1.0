@@ -9,15 +9,20 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.connorlinfoot.titleapi.TitleAPI;
 
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
@@ -27,8 +32,10 @@ import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
+import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
+import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
@@ -52,9 +59,11 @@ import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTracker;
 import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartFailureEvent;
+import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerEliminatedEvent;
 import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
@@ -439,6 +448,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		/* Game specific */
 		ModuleManager.loadModule(MissileWarsHandler.class);
+		ModuleManager.loadModule(UHCHandler.class);
 
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -609,6 +619,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 			ModuleManager.enable(MissileWarsHandler.class);
 			break;
 
+		case "uch":
+			ModuleManager.enable(UHCHandler.class);
+			break;
+
 		default:
 			break;
 		}
@@ -618,9 +632,71 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public void onGameStart(GameStartEvent e) {
 		try {
 			NovaNetworkManager.flagAsGameStarted(serverId);
+			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+				NovaLabymodAPI.sendCurrentPlayingGamemode(player, true, e.getGame().getDisplayName());
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Log.error("NovaMain", "Failed flag this server as minigame_started");
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		if (GameManager.getInstance().isEnabled()) {
+			if (GameManager.getInstance().hasGame()) {
+				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), true, GameManager.getInstance().getActiveGame().getDisplayName());
+			}
+		}
+		// NovaLabymodAPI.sendWatermark(e.getPlayer(), true);
+
+		NovaLabymodAPI.updateGameInfo(e.getPlayer(), true, getServerType().getDisplayName(), 0, 0);
+	}
+
+	@EventHandler
+	public void onPlayerEliminated(PlayerEliminatedEvent e) {
+		if (e.getPlayer().isOnline()) {
+			Player player = e.getPlayer().getPlayer();
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					String sub = "";
+
+					if (e.getKiller() != null) {
+						sub = ChatColor.RED + "Killed by " + ChatColor.AQUA + e.getKiller().getName();
+					}
+
+					player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
+					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
+					NovaLabymodAPI.sendCineScope(player, 10, 20);
+
+					new BukkitRunnable() {
+
+						@Override
+						public void run() {
+							NovaLabymodAPI.sendCineScope(player, 0, 20);
+						}
+					}.runTaskLater(NovaMain.getInstance(), 60);
+				}
+			}.runTaskLater(this, 10L);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerQuit(PlayerQuitEvent e) {
+		if (GameManager.getInstance().isEnabled()) {
+			if (GameManager.getInstance().hasGame()) {
+				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), false, GameManager.getInstance().getActiveGame().getDisplayName());
+				NovaLabymodAPI.updateGameInfo(e.getPlayer(), false, "", 0, 0);
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onGameEnd(GameEndEvent e) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+			NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
 		}
 	}
 

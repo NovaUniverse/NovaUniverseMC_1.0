@@ -22,6 +22,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import net.novauniverse.bungeecord.chatlogger.ChatLogger;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServer;
@@ -148,6 +149,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		cleanupTask.start();
 
 		getProxy().getPluginManager().registerListener(this, this);
+		getProxy().getPluginManager().registerListener(this, new ChatLogger());
 	}
 
 	private void updateServerList() {

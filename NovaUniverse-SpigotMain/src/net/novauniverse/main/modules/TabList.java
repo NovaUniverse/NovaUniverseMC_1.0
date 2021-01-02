@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import net.novauniverse.main.NovaMain;
-import net.zeeraa.novacore.commons.ServerType;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.spigot.NovaCore;
@@ -47,10 +46,8 @@ public class TabList extends NovaModule {
 					String header = "";
 					String footer = "";
 
-					header += ChatColor.AQUA + "" + "-=-=-=[" + colorAnimation[colorAnimationIndex] + "" + ChatColor.BOLD + " NovaUniverse " + ChatColor.RESET + ChatColor.AQUA + "]=-=-=-";
-					
-					header+="\n" +ChatColor.YELLOW + ""+ChatColor.BOLD + NovaMain.getInstance().getServerType().getDisplayName();
-					
+					header += colorAnimation[colorAnimationIndex] + "" + ChatColor.BOLD + " NovaUniverse " + ChatColor.YELLOW + "" + ChatColor.BOLD + NovaMain.getInstance().getServerType().getDisplayName();
+
 					int ping = NovaCore.getInstance().getVersionIndependentUtils().getPlayerPing(player);
 
 					footer += ChatColor.AQUA + "-=[ ";

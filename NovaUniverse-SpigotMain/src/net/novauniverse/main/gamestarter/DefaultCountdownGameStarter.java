@@ -45,9 +45,11 @@ public class DefaultCountdownGameStarter extends GameStarter {
 
 				if (c >= 2) {
 					if (!GameManager.getInstance().getCountdown().isCountdownRunning()) {
-						Log.info(getName(), "Starting countdown since there are 2 or more players / teams online");
-						if (!GameManager.getInstance().getCountdown().startCountdown()) {
-							Log.warn("DefaultCountdownGameStarter", "GameCountdown#startCountdown() returned false. The server might be in an invalid game state and might require a restart");
+						if (GameManager.getInstance().getActiveGame().canStart()) {
+							Log.info(getName(), "Starting countdown since there are 2 or more players / teams online");
+							if (!GameManager.getInstance().getCountdown().startCountdown()) {
+								Log.warn("DefaultCountdownGameStarter", "GameCountdown#startCountdown() returned false. The server might be in an invalid game state and might require a restart");
+							}
 						}
 					}
 				} else {

@@ -1,5 +1,6 @@
 package net.novauniverse.commons.network;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -153,7 +154,7 @@ public class NovaNetworkManager {
 		rs.close();
 		ps.close();
 	}
-
+	
 	public void clearServers() {
 		servers.clear();
 	}
@@ -342,6 +343,21 @@ public class NovaNetworkManager {
 
 		return server;
 	}
+	
+	public static void storeChatMessage(UUID uuid, String content, boolean isCommand, boolean isCanceled) throws SQLException {
+		String sql = "CALL store_chat_message(?, ?, ?, ?)";
+		CallableStatement cs = NovaUniverseCommons.getDbConnection().getConnection().prepareCall(sql);
+
+		cs.setString(1, uuid.toString());
+		cs.setBoolean(2, isCommand);
+		cs.setBoolean(3, isCanceled);
+		cs.setString(4, content);
+
+		cs.execute();
+
+		cs.close();
+	}
+
 
 	public static boolean flagAsGameStarted(int serverId) throws SQLException {
 		String sql = "UPDATE servers SET minigame_started = 1 WHERE id = ?";
