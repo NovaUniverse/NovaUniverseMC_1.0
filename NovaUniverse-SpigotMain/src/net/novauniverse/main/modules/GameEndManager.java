@@ -17,7 +17,23 @@ public class GameEndManager extends NovaModule implements Listener {
 	public static final int ATTEMPTS_BEFORE_FALLBACK_LOBBY = 5;
 	public static final int ATTEMPTS_BEFORE_FAIL = 10;
 
+	private static GameEndManager instance;
+
 	private int sendAttempts;
+
+	private boolean preventShutdown;
+
+	public static GameEndManager getInstance() {
+		return instance;
+	}
+
+	public void setPreventShutdown(boolean preventShutdown) {
+		this.preventShutdown = preventShutdown;
+	}
+
+	public boolean isPreventShutdown() {
+		return preventShutdown;
+	}
 
 	@Override
 	public String getName() {
@@ -26,7 +42,9 @@ public class GameEndManager extends NovaModule implements Listener {
 
 	@Override
 	public void onLoad() {
+		GameEndManager.instance = this;
 		this.sendAttempts = 0;
+		this.preventShutdown = false;
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -39,26 +57,32 @@ public class GameEndManager extends NovaModule implements Listener {
 		case TIME:
 			Bukkit.getServer().broadcastMessage(ChatColor.RED + "Game was ended due to time limit reached");
 			break;
-			
+
+		case SERVER_ENDED_GAME:
+			Bukkit.getServer().broadcastMessage(ChatColor.RED + "Game was ended by the server");
+			break;
+
 		default:
 			break;
 		}
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-					p.sendMessage(LanguageManager.getString(p.getUniqueId(), "novauniverse.game.sending_you_to_lobby_10_seconds"));
-				}
-
-				Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						attemptSend();
+		if (!preventShutdown) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
+				@Override
+				public void run() {
+					for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+						p.sendMessage(LanguageManager.getString(p.getUniqueId(), "novauniverse.game.sending_you_to_lobby_10_seconds"));
 					}
-				}, 200L);
-			}
-		}, 100L);
+
+					Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
+						@Override
+						public void run() {
+							attemptSend();
+						}
+					}, 200L);
+				}
+			}, 100L);
+		}
 	}
 
 	public void attemptSend() {

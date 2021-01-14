@@ -38,7 +38,8 @@ public class GameStartScoreboardCountdown extends NovaModule {
 		task = new SimpleTask(NovaMain.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				//System.out.println("NovaMain.getInstance().getGameStarter().shouldShowCountdown(): " + NovaMain.getInstance().getGameStarter().shouldShowCountdown());
+				// System.out.println("NovaMain.getInstance().getGameStarter().shouldShowCountdown():
+				// " + NovaMain.getInstance().getGameStarter().shouldShowCountdown());
 				if (NovaMain.getInstance().getGameStarter().shouldShowCountdown()) {
 					countdownVisible = true;
 					NetherBoardScoreboard.getInstance().setGlobalLine(countdownLine, ChatColor.GOLD + "Starting in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(NovaMain.getInstance().getGameStarter().getTimeLeft()));

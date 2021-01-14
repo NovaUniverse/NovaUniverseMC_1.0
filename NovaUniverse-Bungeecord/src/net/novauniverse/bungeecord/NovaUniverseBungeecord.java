@@ -232,6 +232,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 	@EventHandler
 	public void onPostLogin(PostLoginEvent e) {
+		e.getPlayer().sendMessage(new TextComponent(ChatColor.GOLD + "NovaUniverse is still in early alpha!\n " + ChatColor.GOLD + "If you find any bugs please report them on our discord server"));
 		try {
 			String sql = "{CALL player_join_data(?, ?, ?)}";
 			CallableStatement cs = NovaUniverseCommons.getDbConnection().getConnection().prepareCall(sql);
@@ -239,6 +240,8 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 			cs.setString(1, e.getPlayer().getUniqueId().toString());
 			cs.setString(2, e.getPlayer().getName());
 			cs.setString(3, e.getPlayer().getSocketAddress().toString());
+
+			cs.execute();
 
 			cs.close();
 		} catch (Exception ex) {

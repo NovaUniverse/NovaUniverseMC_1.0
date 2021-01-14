@@ -112,7 +112,6 @@ public class NovaUniverseLobby extends NovaPlugin {
 
 			// Scoreboard
 			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + "Lobby");
-			;
 
 			// Lobby spawn
 			ConfigurationSection spawnSection = this.getConfig().getConfigurationSection("spawn_location");
@@ -179,6 +178,8 @@ public class NovaUniverseLobby extends NovaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		NetherBoardScoreboard.getInstance().setGlobalLine(13, ChatColor.YELLOW + "discord.gg/q3WgakdHTy");
 	}
 
 	@Override

@@ -5,10 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import net.novauniverse.games.missilewars.game.MissileWars;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.zeeraa.novacore.commons.tasks.Task;
-import net.zeeraa.novacore.commons.utils.TextUtils;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.module.modules.game.triggers.RepeatingGameTrigger;
@@ -22,7 +20,6 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 
 	public static final int TEAM_LINE = 1;
 	public static final int LOOT_COUNTDOWN_LINE = 2;
-	public static final int TIME_LEFT_LINE = 3;
 	private boolean lootCountdownShown;
 
 	@Override
@@ -59,17 +56,6 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 						NetherBoardScoreboard.getInstance().setPlayerLine(TEAM_LINE, player, ChatColor.GRAY + "No team");
 					} else {
 						NetherBoardScoreboard.getInstance().setPlayerLine(TEAM_LINE, player, team.getDisplayName() + " team");
-					}
-				}
-
-				if (GameManager.getInstance().hasGame()) {
-					if (GameManager.getInstance().getActiveGame() instanceof MissileWars) {
-						MissileWars missileWars = (MissileWars) GameManager.getInstance().getActiveGame();
-						if (missileWars.getGameEndTimer() != null) {
-							if (missileWars.hasStarted()) {
-								NetherBoardScoreboard.getInstance().setGlobalLine(TIME_LEFT_LINE, ChatColor.GOLD + "Time left: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(missileWars.getGameEndTimer().getTimeLeft()));
-							}
-						}
 					}
 				}
 			}

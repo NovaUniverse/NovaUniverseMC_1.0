@@ -29,6 +29,7 @@ import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.commands.Base64DumpItemCommand;
 import net.novauniverse.main.commands.JoinServerGroupCommand;
+import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
@@ -36,9 +37,12 @@ import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
+import net.novauniverse.main.modules.CheckShutdownRequest;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
+import net.novauniverse.main.modules.NovaGameTimeLimit;
+import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
 import net.novauniverse.main.servericons.ServerIconIndex;
@@ -79,11 +83,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private NovaServerType fallbackLobbyServerType;
 	private String serverName;
 	private String serverHost;
+	private int serverId;
 
 	private List<GameStarter> gameStarters;
 	private GameStarter gameStarter;
-
-	private int serverId;
 
 	private Task heartbeatTask;
 	private Task updateServersTask;
@@ -128,6 +131,18 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	public boolean isUseTeams() {
 		return useTeams;
+	}
+
+	public String getServerHost() {
+		return serverHost;
+	}
+
+	public int getServerId() {
+		return serverId;
+	}
+
+	public String getServerName() {
+		return serverName;
 	}
 
 	@Override
@@ -445,6 +460,9 @@ public class NovaMain extends NovaPlugin implements Listener {
 		ModuleManager.loadModule(WinMessage.class, true);
 		ModuleManager.loadModule(TabList.class, true);
 		ModuleManager.loadModule(GameStartScoreboardCountdown.class);
+		ModuleManager.loadModule(NovaGameTimeLimit.class, true);
+		ModuleManager.loadModule(NovaSetReconnectServer.class);
+		ModuleManager.loadModule(CheckShutdownRequest.class, true);
 
 		/* Game specific */
 		ModuleManager.loadModule(MissileWarsHandler.class);
@@ -452,6 +470,26 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
+
+		/* Check configuration value: time_limit_countdown_line */
+		if (config.has("time_limit_countdown_line")) {
+			NovaGameTimeLimit.getInstance().setTimeLeftLine(config.getInt("time_limit_countdown_line"));
+		}
+
+		/* Check configuration value: time_limit */
+		if (config.has("time_limit")) {
+			NovaGameTimeLimit.getInstance().setTimeLeft(config.getLong("time_limit"));
+			ModuleManager.enable(NovaGameTimeLimit.class);
+			Log.info("NovaMain", "Game time limit enabled");
+		}
+
+		/* Check configuration value: set_reconnect_server */
+		if (config.has("set_reconnect_server")) {
+			if (config.getBoolean("set_reconnect_server")) {
+				ModuleManager.enable(NovaSetReconnectServer.class);
+				Log.info("NovaMain", "NovaSetReconnectServer enabled");
+			}
+		}
 
 		/* Check configuration value: name_override and generate name */
 		if (config.has("name_override")) {
@@ -548,14 +586,15 @@ public class NovaMain extends NovaPlugin implements Listener {
 		NetherBoardScoreboard.getInstance().setDefaultTitle(ChatColor.AQUA + "" + ChatColor.BOLD + "NovaUniverse");
 		NetherBoardScoreboard.getInstance().setGlobalLine(14, ChatColor.YELLOW + "https://novauniverse.net");
 
+		if (gameStarter != null) {
+			ModuleManager.enable(GameStartScoreboardCountdown.class);
+		}
+		
 		CommandRegistry.registerCommand(new JoinServerGroupCommand());
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 		CommandRegistry.registerCommand(new ShowServersCommand());
 		CommandRegistry.registerCommand(new Base64DumpItemCommand());
-
-		if (gameStarter != null) {
-			ModuleManager.enable(GameStartScoreboardCountdown.class);
-		}
+		CommandRegistry.registerCommand(new ReconnectCommand());
 	}
 
 	@Override
@@ -619,7 +658,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			ModuleManager.enable(MissileWarsHandler.class);
 			break;
 
-		case "uch":
+		case "uhc":
 			ModuleManager.enable(UHCHandler.class);
 			break;
 

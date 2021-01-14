@@ -43,16 +43,17 @@ public class NPCServerListener extends NovaModule implements Listener {
 	public void onNPCClick(NPCRightClickEvent e) {
 		this.handleClickEvent(e);
 	}
-	
+
 	@EventHandler
 	public void onNPCClick(NPCLeftClickEvent e) {
 		this.handleClickEvent(e);
 	}
-	
+
 	public void handleClickEvent(NPCClickEvent e) {
 		int npcId = e.getNPC().getId();
 
-		System.out.println("npcServerGroupMap.containsKey(" + npcId + ") : " + npcServerGroupMap.containsKey(npcId));
+		// System.out.println("npcServerGroupMap.containsKey(" + npcId + ") : " +
+		// npcServerGroupMap.containsKey(npcId));
 
 		if (npcServerGroupMap.containsKey(npcId)) {
 			String serverTypeName = npcServerGroupMap.get(npcId);
