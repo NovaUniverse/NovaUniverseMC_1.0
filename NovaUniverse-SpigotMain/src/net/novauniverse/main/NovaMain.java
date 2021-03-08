@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,6 +32,8 @@ import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
+import net.novauniverse.main.commands.WhereAmICommand;
+import net.novauniverse.main.gamespecific.DeathSwapHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
@@ -45,6 +47,8 @@ import net.novauniverse.main.modules.NovaGameTimeLimit;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
+import net.novauniverse.main.pluginmessagelistener.NovaPluginMessageListener;
+import net.novauniverse.main.serverfinder.ServerFinder;
 import net.novauniverse.main.servericons.ServerIconIndex;
 import net.novauniverse.main.team.skywars.solo.SkywarsSoloTeamManager;
 import net.novauniverse.main.team.solo.SoloTeamManager;
@@ -57,6 +61,7 @@ import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.JSONFileType;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
+import net.zeeraa.novacore.spigot.abstraction.events.VersionIndependantPlayerAchievementAwardedEvent;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
@@ -292,8 +297,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		Log.info("NovaMain", "DBConnection started");
 		NovaUniverseCommons.setDbConnection(dbc);
+		NovaUniverseCommons.setServerFinder(new ServerFinder());
 
 		this.networkManager = new NovaNetworkManager();
+		NovaUniverseCommons.setNetworkManager(networkManager);
 
 		Log.info("NovaMain", "Updating server types in NetworkManager");
 		try {
@@ -467,6 +474,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		/* Game specific */
 		ModuleManager.loadModule(MissileWarsHandler.class);
 		ModuleManager.loadModule(UHCHandler.class);
+		ModuleManager.loadModule(DeathSwapHandler.class);
 
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -589,12 +597,16 @@ public class NovaMain extends NovaPlugin implements Listener {
 		if (gameStarter != null) {
 			ModuleManager.enable(GameStartScoreboardCountdown.class);
 		}
-		
+
 		CommandRegistry.registerCommand(new JoinServerGroupCommand());
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 		CommandRegistry.registerCommand(new ShowServersCommand());
 		CommandRegistry.registerCommand(new Base64DumpItemCommand());
 		CommandRegistry.registerCommand(new ReconnectCommand());
+		CommandRegistry.registerCommand(new WhereAmICommand());
+
+		getServer().getMessenger().registerIncomingPluginChannel(this, "NovaUniverse", new NovaPluginMessageListener());
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "NovaUniverse");
 	}
 
 	@Override
@@ -627,15 +639,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 	}
 
 	public void sendToLobby(Player player, boolean useFallback) {
-		try {
-			if (serverType.getReturnToServerType() != null && !useFallback) {
-				networkManager.sendPlayerToServer(player.getUniqueId(), serverType.getReturnToServerType());
-			} else {
-				networkManager.sendPlayerToServer(player.getUniqueId(), fallbackLobbyServerType);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.error("Failed to fetch target lobby server for player: " + player.getName());
+		if (serverType.getReturnToServerType() != null && !useFallback) {
+			NovaUniverseCommons.getServerFinder().joinServerType(player.getUniqueId(), serverType.getReturnToServerType());
+		} else {
+			NovaUniverseCommons.getServerFinder().joinServerType(player.getUniqueId(), fallbackLobbyServerType);
 		}
 	}
 
@@ -661,10 +668,19 @@ public class NovaMain extends NovaPlugin implements Listener {
 		case "uhc":
 			ModuleManager.enable(UHCHandler.class);
 			break;
+			
+		case "deathswap":
+			ModuleManager.enable(DeathSwapHandler.class);
+			break;
 
 		default:
 			break;
 		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onTooLongName(VersionIndependantPlayerAchievementAwardedEvent e) {
+		e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -735,6 +751,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+			
+			
 			NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
 		}
 	}

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
 
-import me.kaimu.hastebin.Hastebin;
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.command.AllowedSenders;
@@ -48,17 +47,22 @@ public class Base64DumpItemCommand extends NovaCommand {
 			return false;
 		}
 
-		Hastebin hastebin = new Hastebin();
+		// Hastebin hastebin = new Hastebin();
 
-		try {
-			String url = hastebin.post(base64, true);
+		// try {
+		/*
+		 * String url = hastebin.post(base64, true);
+		 * 
+		 * player.sendMessage(ChatColor.GREEN + url);
+		 */
 
-			player.sendMessage(ChatColor.GREEN + url);
-		} catch (IOException e) {
-			player.sendMessage(ChatColor.DARK_RED + e.getMessage());
-			e.printStackTrace();
-			return false;
-		}
+		System.out.println(base64);
+		player.sendMessage(ChatColor.GREEN + "Check console for result");
+		// } catch (IOException e) {
+		// player.sendMessage(ChatColor.DARK_RED + e.getMessage());
+		// e.printStackTrace();
+		// return false;
+		// }
 
 		return true;
 	}

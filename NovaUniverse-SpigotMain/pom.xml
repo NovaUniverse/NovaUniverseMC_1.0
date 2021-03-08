@@ -98,6 +98,11 @@
 			<id>zeeraas repo</id>
 			<url>https://nexus.zeeraa.net/repository/maven-group/</url>
 		</repository>
+
+		<repository>
+			<id>dmulloy2-repo</id>
+			<url>https://repo.dmulloy2.net/nexus/repository/public/</url>
+		</repository>
 	</repositories>
 
 	<dependencyManagement>
@@ -137,6 +142,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>4.5.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.zeeraa.novacore</groupId>
 			<artifactId>novacore-spigot</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
@@ -163,6 +174,13 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>net.novauniverse</groupId>
+			<artifactId>NovaDeathSwap</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<artifactId>bukkit</artifactId>
@@ -170,7 +188,7 @@
 			<version>1.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<artifactId>common</artifactId>
 			<groupId>net.labymod.serverapi</groupId>

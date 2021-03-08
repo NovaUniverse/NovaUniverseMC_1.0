@@ -22,5 +22,4 @@ public abstract class GameStarter implements Listener {
 	public abstract boolean shouldShowCountdown();
 
 	public abstract long getTimeLeft();
-
 }

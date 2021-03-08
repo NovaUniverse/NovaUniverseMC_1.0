@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import net.novauniverse.lobby.menu.ServerMenuPlayerCountUpdater;
 import net.novauniverse.lobby.messages.LobbyMessages;
 import net.novauniverse.lobby.misc.DoubleJump;
+import net.novauniverse.lobby.modules.LobbyFireworks;
 import net.novauniverse.lobby.npc.NPCServerListener;
 import net.novauniverse.lobby.serverselector.ServerSelectorItem;
 import net.novauniverse.lobby.spawn.NovaUniverseSpawn;
@@ -55,11 +56,17 @@ public class NovaUniverseLobby extends NovaPlugin {
 	private File kotlFile;
 	private File worldFile;
 	private File npcServersFile;
+	
+	private MultiverseWorld world;
 
 	private Location spawnLocation;
 
 	public Location getSpawnLocation() {
 		return spawnLocation;
+	}
+	
+	public MultiverseWorld getWorld() {
+		return world;
 	}
 
 	@Override
@@ -92,7 +99,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 			// Multiverse
 			this.requireModule(MultiverseManager.class);
 
-			MultiverseWorld world = MultiverseManager.getInstance().createFromFile(worldFile, WorldUnloadOption.DELETE);
+			world = MultiverseManager.getInstance().createFromFile(worldFile, WorldUnloadOption.DELETE);
 
 			world.getWorld().setStorm(false);
 			world.setLockWeather(true);
@@ -109,6 +116,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 			this.loadModule(LobbyMessages.class, true);
 			this.loadModule(NPCServerListener.class, true);
 			this.loadModule(ServerMenuPlayerCountUpdater.class, true);
+			this.loadModule(LobbyFireworks.class, true);
 
 			// Scoreboard
 			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + "Lobby");

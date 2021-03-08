@@ -1,6 +1,5 @@
 package net.novauniverse.lobby.menu;
 
-import java.sql.SQLException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,6 +10,7 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.spigot.module.modules.gui.GUIAction;
@@ -21,7 +21,7 @@ public class ServerMenu {
 	public static final int GUI_START_AT = 10;
 	public static final int GUI_NEWLINE_AT = 7;
 	public static final int GUI_NEWLINE_INCREMENT = 2;
-	
+
 	public static void show(Player player) {
 		ServerMenuHolder holder = new ServerMenuHolder();
 		Inventory inventory = Bukkit.getServer().createInventory(holder, 9 * 6, "Servers");
@@ -46,19 +46,12 @@ public class ServerMenu {
 			inventory.setItem(slot, stack);
 
 			holder.getServerTypeSlots().put(serverType, slot);
-			
+
 			holder.addClickCallback(slot, new GUIClickCallback() {
 				@Override
 				public GUIAction onClick(Inventory clickedInventory, Inventory inventory, HumanEntity entity, int clickedSlot, SlotType slotType, InventoryAction clickType) {
 					entity.sendMessage(ChatColor.GOLD + "Joining " + ChatColor.AQUA + serverType.getDisplayName());
-					try {
-						if (!NovaMain.getInstance().getNetworkManager().sendPlayerToServer(entity.getUniqueId(), serverType)) {
-							entity.sendMessage(ChatColor.RED + "Could not find a server. Please try again later");
-						}
-					} catch (SQLException e) {
-						entity.sendMessage(ChatColor.DARK_RED + e.getClass().getName());
-						e.printStackTrace();
-					}
+					NovaUniverseCommons.getServerFinder().joinServerType(entity.getUniqueId(), serverType);
 					return GUIAction.NONE;
 				}
 			});

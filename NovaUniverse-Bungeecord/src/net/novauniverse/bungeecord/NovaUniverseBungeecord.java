@@ -23,6 +23,10 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import net.novauniverse.bungeecord.chatlogger.ChatLogger;
+import net.novauniverse.bungeecord.chatlogger.serverfinder.ServerFinder;
+import net.novauniverse.bungeecord.commands.JoinCommand;
+import net.novauniverse.bungeecord.commands.SpectateCommand;
+import net.novauniverse.bungeecord.pluginmessagelistener.PluginMessageListener;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServer;
@@ -50,6 +54,10 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 	public static NovaUniverseBungeecord getInstance() {
 		return instance;
+	}
+
+	public NovaNetworkManager getNetworkManager() {
+		return networkManager;
 	}
 
 	@Override
@@ -81,8 +89,10 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		}
 
 		NovaUniverseCommons.setDbConnection(dbc);
+		NovaUniverseCommons.setServerFinder(new ServerFinder());
 
 		networkManager = new NovaNetworkManager();
+		NovaUniverseCommons.setNetworkManager(networkManager);
 		try {
 			networkManager.update(true);
 		} catch (SQLException e1) {
@@ -150,6 +160,34 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerListener(this, new ChatLogger());
+		getProxy().getPluginManager().registerListener(this, new PluginMessageListener());
+
+		getProxy().registerChannel("NovaUniverse");
+
+		ProxyServer.getInstance().getPluginManager().registerCommand(this, new SpectateCommand());
+		ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinCommand());
+	}
+
+	@Override
+	public void onDisable() {
+		Task.tryStopTask(playerHeartbeatTask);
+		Task.tryStopTask(networkUpdateTask);
+		Task.tryStopTask(cleanupTask);
+
+		try {
+			if (NovaUniverseCommons.getDbConnection() != null) {
+				if (NovaUniverseCommons.getDbConnection().isConnected()) {
+					NovaUniverseCommons.getDbConnection().close();
+					NovaUniverseCommons.setDbConnection(null);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		getProxy().getScheduler().cancel(this);
+		getProxy().getPluginManager().unregisterListeners((Plugin) this);
+		getProxy().getPluginManager().unregisterCommands((Plugin) this);
 	}
 
 	private void updateServerList() {
@@ -181,28 +219,6 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 			ProxyServer.getInstance().getServers().remove(name);
 			Log.trace("NovaBungeecord", "Removed server " + name);
 		}
-	}
-
-	@Override
-	public void onDisable() {
-		Task.tryStopTask(playerHeartbeatTask);
-		Task.tryStopTask(networkUpdateTask);
-		Task.tryStopTask(cleanupTask);
-
-		try {
-			if (NovaUniverseCommons.getDbConnection() != null) {
-				if (NovaUniverseCommons.getDbConnection().isConnected()) {
-					NovaUniverseCommons.getDbConnection().close();
-					NovaUniverseCommons.setDbConnection(null);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		getProxy().getScheduler().cancel(this);
-		getProxy().getPluginManager().unregisterListeners((Plugin) this);
-		getProxy().getPluginManager().unregisterCommands((Plugin) this);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
