@@ -98,6 +98,15 @@
 			<id>zeeraas repo</id>
 			<url>https://nexus.zeeraa.net/repository/maven-group/</url>
 		</repository>
+		
+		<repository>
+			<id>zeeraas-private-snapshots</id>
+			<url>https://nexus.zeeraa.net/repository/maven-private-snapshots/</url>
+		</repository>
+		<repository>
+			<id>zeeraas-private-releases</id>
+			<url>https://nexus.zeeraa.net/repository/maven-private-releases/</url>
+		</repository>
 
 		<repository>
 			<id>dmulloy2-repo</id>
