@@ -8,20 +8,15 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.connorlinfoot.titleapi.TitleAPI;
 
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
@@ -38,7 +33,7 @@ import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
-import net.novauniverse.main.modules.CheckShutdownRequest;
+import net.novauniverse.main.listener.GameEventListener;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
@@ -46,6 +41,7 @@ import net.novauniverse.main.modules.NovaGameTimeLimit;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
+import net.novauniverse.main.modules.shutdownrequest.CheckShutdownRequest;
 import net.novauniverse.main.pluginmessagelistener.NovaPluginMessageListener;
 import net.novauniverse.main.serverfinder.ServerFinder;
 import net.novauniverse.main.servericons.ServerIconIndex;
@@ -62,16 +58,10 @@ import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.abstraction.events.VersionIndependantPlayerAchievementAwardedEvent;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
-import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTracker;
 import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartFailureEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerEliminatedEvent;
 import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
@@ -128,6 +118,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public GameStarter getGameStarter() {
 		return gameStarter;
 	}
+	
+	public void setGameStarter(GameStarter gameStarter) {
+		this.gameStarter = gameStarter;
+	}
 
 	public boolean isDisableScoreboard() {
 		return disableScoreboard;
@@ -148,7 +142,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public String getServerName() {
 		return serverName;
 	}
-
+	
+	
 	@Override
 	public void onEnable() {
 		/* Set initial variables */
@@ -228,8 +223,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 			FileUtils.forceMkdir(gameLobbyFolder);
 			FileUtils.forceMkdir(worldFolder);
 
-			Log.info("NovaMain", "Reading lobby files from " + gameLobbyFolder.getPath());
-			GameLobby.getInstance().getMapReader().loadAll(gameLobbyFolder, worldFolder);
+			if (NovaCore.isNovaGameEngineEnabled()) {
+				Log.info("NovaMain", "Reading lobby files from " + gameLobbyFolder.getPath());
+				GameLobby.getInstance().getMapReader().loadAll(gameLobbyFolder, worldFolder);
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			Log.fatal("NovaMain", "Failed to setup data directory");
@@ -317,11 +314,13 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}
 
 		/* Check configuration value: use_teams */
-		if (config.has("use_teams")) {
-			if (config.getBoolean("use_teams")) {
-				useTeams = true;
-				Log.info("NovaMain", "Using teams");
-				GameManager.getInstance().setUseTeams(true);
+		if (NovaCore.isNovaGameEngineEnabled()) {
+			if (config.has("use_teams")) {
+				if (config.getBoolean("use_teams")) {
+					useTeams = true;
+					Log.info("NovaMain", "Using teams");
+					GameManager.getInstance().setUseTeams(true);
+				}
 			}
 		}
 
@@ -466,14 +465,20 @@ public class NovaMain extends NovaPlugin implements Listener {
 		ModuleManager.loadModule(WinMessage.class, true);
 		ModuleManager.loadModule(TabList.class, true);
 		ModuleManager.loadModule(GameStartScoreboardCountdown.class);
-		ModuleManager.loadModule(NovaGameTimeLimit.class, true);
 		ModuleManager.loadModule(NovaSetReconnectServer.class);
 		ModuleManager.loadModule(CheckShutdownRequest.class, true);
 
-		/* Game specific */
-		ModuleManager.loadModule(MissileWarsHandler.class);
-		ModuleManager.loadModule(UHCHandler.class);
-		ModuleManager.loadModule(DeathSwapHandler.class);
+		if (NovaCore.isNovaGameEngineEnabled()) {
+			ModuleManager.loadModule(NovaGameTimeLimit.class, true);
+
+			/* Game specific */
+			ModuleManager.loadModule(MissileWarsHandler.class);
+			ModuleManager.loadModule(UHCHandler.class);
+			ModuleManager.loadModule(DeathSwapHandler.class);
+
+			/* Listeners */
+			Bukkit.getServer().getPluginManager().registerEvents(new GameEventListener(), this);
+		}
 
 		/* Listeners */
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
@@ -645,142 +650,16 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onGameLoad(GameLoadedEvent e) {
-		if (!disableScoreboard) {
-			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + e.getGame().getDisplayName());
-		}
-
-		if (gameStarter == null) {
-			Log.warn("NovaMain", "No game starter defined. The game will not auto start");
-		} else {
-			Log.info("NovaMain", "Register events for game starter: " + gameStarter.getClass().getName());
-			gameStarter.onEnable();
-			Bukkit.getServer().getPluginManager().registerEvents(gameStarter, this);
-		}
-
-		switch (e.getGame().getName().toLowerCase()) {
-		case "missilewars":
-			ModuleManager.enable(MissileWarsHandler.class);
-			break;
-
-		case "uhc":
-			ModuleManager.enable(UHCHandler.class);
-			break;
-			
-		case "deathswap":
-			ModuleManager.enable(DeathSwapHandler.class);
-			break;
-
-		default:
-			break;
-		}
-	}
-
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onTooLongName(VersionIndependantPlayerAchievementAwardedEvent e) {
 		e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onGameStart(GameStartEvent e) {
-		try {
-			NovaNetworkManager.flagAsGameStarted(serverId);
-			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(player, true, e.getGame().getDisplayName());
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			Log.error("NovaMain", "Failed flag this server as minigame_started");
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		if (GameManager.getInstance().isEnabled()) {
-			if (GameManager.getInstance().hasGame()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), true, GameManager.getInstance().getActiveGame().getDisplayName());
-			}
-		}
 		// NovaLabymodAPI.sendWatermark(e.getPlayer(), true);
 
 		NovaLabymodAPI.updateGameInfo(e.getPlayer(), true, getServerType().getDisplayName(), 0, 0);
 	}
 
-	@EventHandler
-	public void onPlayerEliminated(PlayerEliminatedEvent e) {
-		if (e.getPlayer().isOnline()) {
-			Player player = e.getPlayer().getPlayer();
-
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					String sub = "";
-
-					if (e.getKiller() != null) {
-						sub = ChatColor.RED + "Killed by " + ChatColor.AQUA + e.getKiller().getName();
-					}
-
-					player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
-					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
-					NovaLabymodAPI.sendCineScope(player, 10, 20);
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							NovaLabymodAPI.sendCineScope(player, 0, 20);
-						}
-					}.runTaskLater(NovaMain.getInstance(), 60);
-				}
-			}.runTaskLater(this, 10L);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerQuit(PlayerQuitEvent e) {
-		if (GameManager.getInstance().isEnabled()) {
-			if (GameManager.getInstance().hasGame()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), false, GameManager.getInstance().getActiveGame().getDisplayName());
-				NovaLabymodAPI.updateGameInfo(e.getPlayer(), false, "", 0, 0);
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onGameEnd(GameEndEvent e) {
-		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			
-			
-			NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onGameStartFailure(GameStartFailureEvent e) {
-		inErrorState = true;
-
-		try {
-			NovaNetworkManager.flagServerAsFailed(serverId);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			Log.error("NovaMain", "Failed flag this server as has_failed");
-		}
-
-		LanguageManager.broadcast("novauniverse.game_load_error");
-
-		Log.fatal("NovaMain", "Failed to start game. Sending player to the lobby in 10 seconds");
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				if (!ModuleManager.isEnabled(GameEndManager.class)) {
-					ModuleManager.enable(GameEndManager.class);
-				}
-				GameEndManager gameEndManager = (GameEndManager) ModuleManager.getModule(GameEndManager.class);
-
-				gameEndManager.attemptSend();
-			}
-		}.runTaskLater(this, 200L);
-	}
 }

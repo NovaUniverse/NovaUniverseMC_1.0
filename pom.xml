@@ -26,12 +26,12 @@
 	
 	<distributionManagement>
 		<snapshotRepository>
-			<id>zeeraas-private-snapshots</id>
-			<url>https://nexus.zeeraa.net/repository/maven-private-snapshots/</url>
+			<id>novauniverse</id>
+			<url>https://nexus.novauniverse.net/repository/novauniverse/</url>
 		</snapshotRepository>
 		<repository>
-			<id>zeeraas-private-releases</id>
-			<url>https://nexus.zeeraa.net/repository/maven-private-releases/</url>
+			<id>novauniverse</id>
+			<url>https://nexus.novauniverse.net/repository/novauniverse/</url>
 		</repository>
 	</distributionManagement>
 	

@@ -95,17 +95,8 @@
 		</repository>
 
 		<repository>
-			<id>zeeraas repo</id>
-			<url>https://nexus.zeeraa.net/repository/maven-group/</url>
-		</repository>
-		
-		<repository>
-			<id>zeeraas-private-snapshots</id>
-			<url>https://nexus.zeeraa.net/repository/maven-private-snapshots/</url>
-		</repository>
-		<repository>
-			<id>zeeraas-private-releases</id>
-			<url>https://nexus.zeeraa.net/repository/maven-private-releases/</url>
+			<id>novauniverse-group</id>
+			<url>https://nexus.novauniverse.net/repository/novauniverse-group/</url>
 		</repository>
 
 		<repository>
@@ -119,14 +110,6 @@
 			<dependency>
 				<groupId>net.zeeraa.novacore</groupId>
 				<artifactId>novacore-spigot</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>net.novauniverse</groupId>
-				<artifactId>novauniverse-commons</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
@@ -159,9 +142,17 @@
 		<dependency>
 			<groupId>net.zeeraa.novacore</groupId>
 			<artifactId>novacore-spigot</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.zeeraa.novacore</groupId>
+			<artifactId>novacore-gameengine</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		
 
 		<dependency>
 			<groupId>net.novauniverse</groupId>
@@ -175,13 +166,6 @@
 			<artifactId>NovaMissileWars</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>net.novauniverse</groupId>
-			<artifactId>novauniverse-commons</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>

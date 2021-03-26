@@ -11,7 +11,8 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="lang"/>
+	<classpathentry kind="lib" path="target/novauniverse-spigot-main-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="target/original-novauniverse-spigot-main-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

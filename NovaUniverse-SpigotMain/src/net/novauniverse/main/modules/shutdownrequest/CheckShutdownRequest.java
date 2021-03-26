@@ -1,4 +1,4 @@
-package net.novauniverse.main.modules;
+package net.novauniverse.main.modules.shutdownrequest;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,11 +10,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.main.NovaMain;
+import net.novauniverse.main.modules.GameEndManager;
 import net.zeeraa.novacore.commons.async.AsyncManager;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameEndReason;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 
 public class CheckShutdownRequest extends NovaModule {
@@ -57,12 +57,8 @@ public class CheckShutdownRequest extends NovaModule {
 													GameEndManager.getInstance().setPreventShutdown(true);
 												}
 
-												if (GameManager.getInstance().isEnabled()) {
-													if (GameManager.getInstance().hasGame()) {
-														if (GameManager.getInstance().getActiveGame().isRunning()) {
-															GameManager.getInstance().getActiveGame().endGame(GameEndReason.SERVER_ENDED_GAME);
-														}
-													}
+												if(NovaCore.isNovaGameEngineEnabled()) {
+													ShutdownGameEngine.shutdownEngine();
 												}
 
 												new BukkitRunnable() {

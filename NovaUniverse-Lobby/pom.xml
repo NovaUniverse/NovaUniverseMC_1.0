@@ -98,15 +98,9 @@
 		</repository>
 
 		<repository>
-			<id>zeeraas-repo</id>
-			<url>https://nexus.zeeraa.net/repository/maven-group/</url>
+			<id>novauniverse-group</id>
+			<url>https://nexus.novauniverse.net/repository/novauniverse-group/</url>
 		</repository>
-
-		<repository>
-			<id>zeeraas-private-repo</id>
-			<url>https://nexus.zeeraa.net/repository/maven-private-group/</url>
-		</repository>
-
 		<repository>
 			<id>enginehub-maven</id>
 			<url>http://maven.enginehub.org/repo/</url>
@@ -133,7 +127,7 @@
 		<dependency>
 			<groupId>net.zeeraa.novacore</groupId>
 			<artifactId>novacore-spigot</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

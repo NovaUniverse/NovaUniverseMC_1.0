@@ -3,6 +3,6 @@ name: NovaMain
 description: BABABOOEY
 version: 1.0
 api-version: 1.13
-softdepend: [NovaCore, LabyModAPI, ProtocolLib]
+softdepend: [NovaCore, LabyModAPI, ProtocolLib, NovaCoreGameEngine]
 
 loadbefore: [NovaGamesTarget]
