@@ -30,7 +30,7 @@ public class ServerFinder implements AbstractServerFinder {
 				out.writeUTF(type.getName());
 				out.writeBoolean(silent);
 
-				bukkitPlayer.sendPluginMessage(NovaMain.getInstance(), "NovaUniverse", out.toByteArray());
+				bukkitPlayer.sendPluginMessage(NovaMain.getInstance(), "NovaUniverse:data", out.toByteArray());
 			}
 		}
 	}
