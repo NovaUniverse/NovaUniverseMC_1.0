@@ -2,7 +2,6 @@ package net.novauniverse.main.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +21,8 @@ import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.modules.GameEndManager;
 import net.zeeraa.novacore.commons.log.Log;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
 import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
@@ -145,7 +146,8 @@ public class GameEventListener implements Listener {
 						sub = ChatColor.RED + "Killed by " + ChatColor.AQUA + e.getKiller().getName();
 					}
 
-					player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
+					//player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
+					VersionIndependantUtils.get().playSound(player, player.getLocation(), VersionIndependantSound.WITHER_HURT, 1F, 1F);
 					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
 
 					if (NovaMain.getInstance().hasLabyMod()) {
