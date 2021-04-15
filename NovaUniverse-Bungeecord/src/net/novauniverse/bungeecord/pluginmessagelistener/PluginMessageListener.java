@@ -45,7 +45,10 @@ public class PluginMessageListener implements Listener {
 						NovaCommons.getAbstractPlayerMessageSender().trySendMessage(uuid, ChatColor.DARK_RED + "ERR:MISSING_SERVER_TYPE");
 						return;
 					}
-					NovaUniverseCommons.getServerFinder().joinServerType(uuid, type);
+					
+					boolean silent = in.readBoolean();
+					
+					NovaUniverseCommons.getServerFinder().joinServerType(uuid, type, silent);
 					break;
 
 				default:
