@@ -28,6 +28,7 @@ import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
 import net.novauniverse.main.commands.WhereAmICommand;
 import net.novauniverse.main.gamespecific.DeathSwapHandler;
+import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
@@ -118,7 +119,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public GameStarter getGameStarter() {
 		return gameStarter;
 	}
-	
+
 	public void setGameStarter(GameStarter gameStarter) {
 		this.gameStarter = gameStarter;
 	}
@@ -142,8 +143,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public String getServerName() {
 		return serverName;
 	}
-	
-	
+
 	@Override
 	public void onEnable() {
 		/* Set initial variables */
@@ -378,6 +378,17 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}
 
+		if (config.has("DefaultCountdownGameStarter_time_override")) {
+			int defaultGameStarterTimeOverride = config.getInt("DefaultCountdownGameStarter_time_override");
+
+			for (GameStarter starter : gameStarters) {
+				if (starter instanceof DefaultCountdownGameStarter) {
+					((DefaultCountdownGameStarter) starter).setStartTimeOverride(defaultGameStarterTimeOverride);
+				}
+
+			}
+		}
+
 		/* Set strict mode */
 		Log.info("NovaMain", strictMode ? "Using strict mode for compass tracker" : "Strict mode disabled for compass trackers");
 		CompassTracker.getInstance().setStrictMode(strictMode);
@@ -475,6 +486,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			ModuleManager.loadModule(MissileWarsHandler.class);
 			ModuleManager.loadModule(UHCHandler.class);
 			ModuleManager.loadModule(DeathSwapHandler.class);
+			ModuleManager.loadModule(ManhuntHandler.class);
 
 			/* Listeners */
 			Bukkit.getServer().getPluginManager().registerEvents(new GameEventListener(), this);
@@ -609,8 +621,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 		CommandRegistry.registerCommand(new ReconnectCommand());
 		CommandRegistry.registerCommand(new WhereAmICommand());
 
-		getServer().getMessenger().registerIncomingPluginChannel(this, "NovaUniverse", new NovaPluginMessageListener());
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "NovaUniverse");
+		getServer().getMessenger().registerIncomingPluginChannel(this, "NovaUniverse:data", new NovaPluginMessageListener());
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "NovaUniverse:data");
 	}
 
 	@Override
@@ -629,6 +641,16 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		Bukkit.getScheduler().cancelTasks(this);
 		HandlerList.unregisterAll((Plugin) this);
+
+		if (NovaSetReconnectServer.getInstance() != null) {
+			if (NovaSetReconnectServer.getInstance().isEnabled()) {
+				try {
+					NovaSetReconnectServer.getInstance().clearAll();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 		try {
 			if (NovaUniverseCommons.getDbConnection() != null) {

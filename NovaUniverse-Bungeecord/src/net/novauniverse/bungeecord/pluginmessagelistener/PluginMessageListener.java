@@ -20,10 +20,10 @@ import net.zeeraa.novacore.commons.log.Log;
 public class PluginMessageListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPluginMessage(PluginMessageEvent e) {
-		if (e.getTag().equalsIgnoreCase("NovaUniverse")) {
+		if (e.getTag().equalsIgnoreCase("NovaUniverse:data")) {
 			e.setCancelled(true);
 			if (e.getSender() instanceof ProxiedPlayer) {
-				Log.warn("PluginMessageListener", "Illegal sender for NovaUniverse plugin message: " + e.getSender().toString());
+				Log.warn("PluginMessageListener", "Illegal sender for NovaUniverse:data plugin message: " + e.getSender().toString());
 				return;
 			}
 

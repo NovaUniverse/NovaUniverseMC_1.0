@@ -483,7 +483,7 @@ public class NovaNetworkManager {
 	public static int registerServer(String serverName, String serverHost, int port, NovaServerType serverType) throws SQLException {
 		int serverId = -1;
 
-		String sql = "INSERT INTO servers (name, host, port, type_id) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO servers (id, name, host, port, type_id) VALUES (null, ?, ?, ?, ?)";
 		PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 		ps.setString(1, serverName);
@@ -532,7 +532,7 @@ public class NovaNetworkManager {
 
 		// Log.trace("NetworkManager", "NovaNetworkManager.sendPlayerToServer() " +
 		// server);
-
+		
 		if (server != null) {
 			return NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
 		}

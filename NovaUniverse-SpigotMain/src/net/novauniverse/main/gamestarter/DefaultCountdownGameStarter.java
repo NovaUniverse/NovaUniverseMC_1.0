@@ -1,6 +1,8 @@
 package net.novauniverse.main.gamestarter;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
@@ -16,7 +18,11 @@ public class DefaultCountdownGameStarter extends GameStarter {
 	public static final int START_TIME = 180;
 	public static final int START_TIME_HALF = 60;
 
+	private int startTimeOverride = -1;
+
 	private boolean passedHalf;
+
+	private boolean enabled = false;
 
 	@Override
 	public String getName() {
@@ -25,8 +31,9 @@ public class DefaultCountdownGameStarter extends GameStarter {
 
 	@Override
 	public void onEnable() {
+		enabled = true;
 		if (GameManager.getInstance().getCountdown() instanceof DefaultGameCountdown) {
-			((DefaultGameCountdown) GameManager.getInstance().getCountdown()).setStartTime(START_TIME);
+			((DefaultGameCountdown) GameManager.getInstance().getCountdown()).setStartTime(startTimeOverride != -1 ? startTimeOverride : START_TIME);
 		}
 
 		passedHalf = false;
@@ -59,14 +66,14 @@ public class DefaultCountdownGameStarter extends GameStarter {
 					}
 				}
 
-				if (GameManager.getInstance().getCountdown().isCountdownRunning()) {
+				if (GameManager.getInstance().getCountdown().isCountdownRunning() && startTimeOverride != -1) {
 					if (!passedHalf) {
 						if (Bukkit.getServer().getOnlinePlayers().size() > (NovaMain.getInstance().getServerType().getTargetPlayerCount() / 2)) {
 							passedHalf = true;
 
-							if (GameManager.getInstance().getCountdown().getTimeLeft() > START_TIME) {
-								Log.info(getName(), "Decreasing countdown since there is more than falf the target amount of players online");
-								GameManager.getInstance().getCountdown().setTimeLeft(START_TIME);
+							if (GameManager.getInstance().getCountdown().getTimeLeft() > START_TIME_HALF) {
+								Log.info(getName(), "Decreasing countdown since there is more than half the target amount of players online");
+								GameManager.getInstance().getCountdown().setTimeLeft(START_TIME_HALF);
 							}
 						}
 					}
@@ -76,7 +83,20 @@ public class DefaultCountdownGameStarter extends GameStarter {
 		checkTask.start();
 	}
 
+	public void setStartTimeOverride(int startTimeOverride) {
+		Log.info("DefaultCountdownGameStarter", ChatColor.AQUA + "startTimeOverride set to " + startTimeOverride);
+		this.startTimeOverride = startTimeOverride;
+		if (enabled) {
+			((DefaultGameCountdown) GameManager.getInstance().getCountdown()).setStartTime(startTimeOverride);
+		}
+	}
+
+	public int getStartTimeOverride() {
+		return startTimeOverride;
+	}
+
 	private void disable() {
+		enabled = false;
 		Task.tryStopTask(checkTask);
 	}
 
@@ -84,6 +104,11 @@ public class DefaultCountdownGameStarter extends GameStarter {
 		if (GameManager.getInstance().hasGame()) {
 			// Special case for missile wars
 			if (GameManager.getInstance().getActiveGame().getName().equalsIgnoreCase("missilewars")) {
+				return Bukkit.getServer().getOnlinePlayers().size();
+			}
+
+			// Special case for manhunt
+			if (GameManager.getInstance().getActiveGame().getName().equalsIgnoreCase("manhunt")) {
 				return Bukkit.getServer().getOnlinePlayers().size();
 			}
 		}

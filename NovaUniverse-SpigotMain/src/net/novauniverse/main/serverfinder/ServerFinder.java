@@ -15,6 +15,11 @@ import net.novauniverse.main.NovaMain;
 public class ServerFinder implements AbstractServerFinder {
 	@Override
 	public void joinServerType(UUID player, NovaServerType type) {
+		this.joinServerType(player, type, false);
+	}
+	
+	@Override
+	public void joinServerType(UUID player, NovaServerType type, boolean silent) {
 		Player bukkitPlayer = Bukkit.getServer().getPlayer(player);
 		if (bukkitPlayer != null) {
 			if (bukkitPlayer.isOnline()) {
@@ -23,6 +28,7 @@ public class ServerFinder implements AbstractServerFinder {
 				out.writeUTF("Find");
 				out.writeUTF(player.toString());
 				out.writeUTF(type.getName());
+				out.writeBoolean(silent);
 
 				bukkitPlayer.sendPluginMessage(NovaMain.getInstance(), "NovaUniverse", out.toByteArray());
 			}

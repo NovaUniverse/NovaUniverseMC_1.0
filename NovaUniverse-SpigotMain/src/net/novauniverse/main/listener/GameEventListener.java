@@ -16,6 +16,7 @@ import com.connorlinfoot.titleapi.TitleAPI;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.main.NovaMain;
 import net.novauniverse.main.gamespecific.DeathSwapHandler;
+import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
@@ -70,6 +71,10 @@ public class GameEventListener implements Listener {
 			
 		case "deathswap":
 			ModuleManager.enable(DeathSwapHandler.class);
+			break;
+			
+		case "manhunt":
+			ModuleManager.enable(ManhuntHandler.class);
 			break;
 
 		default:

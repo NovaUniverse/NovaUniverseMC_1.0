@@ -162,7 +162,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		getProxy().getPluginManager().registerListener(this, new ChatLogger());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageListener());
 
-		getProxy().registerChannel("NovaUniverse");
+		getProxy().registerChannel("NovaUniverse:data");
 
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new SpectateCommand());
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinCommand());

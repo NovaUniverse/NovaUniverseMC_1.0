@@ -21,6 +21,17 @@ import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerEliminatedEvent;
 
 public class NovaSetReconnectServer extends NovaModule implements Listener {
+	private static NovaSetReconnectServer instance;
+	
+	public static NovaSetReconnectServer getInstance() {
+		return instance;
+	}
+	
+	@Override
+	public void onLoad() {
+		NovaSetReconnectServer.instance = this;
+	}
+	
 	@Override
 	public String getName() {
 		return "NovaSetReconnectServer";
@@ -28,11 +39,6 @@ public class NovaSetReconnectServer extends NovaModule implements Listener {
 
 	@Override
 	public void onDisable() throws Exception {
-		try {
-			clearAll();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void clearAll() throws SQLException {
