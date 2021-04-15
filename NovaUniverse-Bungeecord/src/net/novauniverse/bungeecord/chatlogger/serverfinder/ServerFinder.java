@@ -8,6 +8,7 @@ import net.novauniverse.bungeecord.NovaUniverseBungeecord;
 import net.novauniverse.commons.abstraction.AbstractServerFinder;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.zeeraa.novacore.commons.NovaCommons;
+import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.utils.platformindependent.PlatformIndependentPlayerAPI;
 
 public class ServerFinder implements AbstractServerFinder {
@@ -19,7 +20,10 @@ public class ServerFinder implements AbstractServerFinder {
 	@Override
 	public void joinServerType(UUID player, NovaServerType type, boolean silent) {
 		try {
-			if(!NovaUniverseBungeecord.getInstance().getNetworkManager().sendPlayerToServer(player, type)) {
+			boolean result = NovaUniverseBungeecord.getInstance().getNetworkManager().sendPlayerToServer(player, type);
+			
+			if(!result) {
+				Log.trace("ServerFinder", "NovaNetworkManager#sendPlayerToServer(UUID, NovaServerType) returned false");
 				if(!silent) {
 					PlatformIndependentPlayerAPI.get().sendMessage(player, ChatColor.RED+ "Could not find any available servers. Please try again later");
 				}

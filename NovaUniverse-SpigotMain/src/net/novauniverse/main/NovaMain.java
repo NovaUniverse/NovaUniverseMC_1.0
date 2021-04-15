@@ -629,8 +629,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 		CommandRegistry.registerCommand(new ReconnectCommand());
 		CommandRegistry.registerCommand(new WhereAmICommand());
 
-		getServer().getMessenger().registerIncomingPluginChannel(this, "NovaUniverse:data", new NovaPluginMessageListener());
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "NovaUniverse:data");
+		getServer().getMessenger().registerIncomingPluginChannel(this, "novauniverse:data", new NovaPluginMessageListener());
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "novauniverse:data");
 	}
 
 	@Override

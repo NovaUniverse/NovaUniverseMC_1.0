@@ -534,7 +534,8 @@ public class NovaNetworkManager {
 		// server);
 		
 		if (server != null) {
-			return NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
+			NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
+			return true;
 		}
 
 		return false;
