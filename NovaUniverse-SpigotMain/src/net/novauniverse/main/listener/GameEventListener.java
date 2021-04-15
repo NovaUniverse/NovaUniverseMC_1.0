@@ -45,7 +45,7 @@ public class GameEventListener implements Listener {
 			Log.error("NovaMain", "Failed flag this server as minigame_started");
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameLoad(GameLoadedEvent e) {
 		if (!NovaMain.getInstance().isDisableScoreboard()) {
@@ -68,11 +68,11 @@ public class GameEventListener implements Listener {
 		case "uhc":
 			ModuleManager.enable(UHCHandler.class);
 			break;
-			
+
 		case "deathswap":
 			ModuleManager.enable(DeathSwapHandler.class);
 			break;
-			
+
 		case "manhunt":
 			ModuleManager.enable(ManhuntHandler.class);
 			break;
@@ -81,22 +81,25 @@ public class GameEventListener implements Listener {
 			break;
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		if (GameManager.getInstance().isEnabled()) {
 			if (GameManager.getInstance().hasGame()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), true, GameManager.getInstance().getActiveGame().getDisplayName());
+				if (NovaMain.getInstance().hasLabyMod()) {
+					NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), true, GameManager.getInstance().getActiveGame().getDisplayName());
+				}
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			
-			
-			NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
+
+			if (NovaMain.getInstance().hasLabyMod()) {
+				NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
+			}
 		}
 	}
 
@@ -127,7 +130,7 @@ public class GameEventListener implements Listener {
 			}
 		}.runTaskLater(NovaMain.getInstance(), 200L);
 	}
-	
+
 	@EventHandler
 	public void onPlayerEliminated(PlayerEliminatedEvent e) {
 		if (e.getPlayer().isOnline()) {
@@ -144,15 +147,17 @@ public class GameEventListener implements Listener {
 
 					player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
 					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
-					NovaLabymodAPI.sendCineScope(player, 10, 20);
 
-					new BukkitRunnable() {
+					if (NovaMain.getInstance().hasLabyMod()) {
+						NovaLabymodAPI.sendCineScope(player, 10, 20);
+						new BukkitRunnable() {
 
-						@Override
-						public void run() {
-							NovaLabymodAPI.sendCineScope(player, 0, 20);
-						}
-					}.runTaskLater(NovaMain.getInstance(), 60);
+							@Override
+							public void run() {
+								NovaLabymodAPI.sendCineScope(player, 0, 20);
+							}
+						}.runTaskLater(NovaMain.getInstance(), 60);
+					}
 				}
 			}.runTaskLater(NovaMain.getInstance(), 10L);
 		}
@@ -162,8 +167,10 @@ public class GameEventListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		if (GameManager.getInstance().isEnabled()) {
 			if (GameManager.getInstance().hasGame()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), false, GameManager.getInstance().getActiveGame().getDisplayName());
-				NovaLabymodAPI.updateGameInfo(e.getPlayer(), false, "", 0, 0);
+				if (NovaMain.getInstance().hasLabyMod()) {
+					NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), false, GameManager.getInstance().getActiveGame().getDisplayName());
+					NovaLabymodAPI.updateGameInfo(e.getPlayer(), false, "", 0, 0);
+				}
 			}
 		}
 	}

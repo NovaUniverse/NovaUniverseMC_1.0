@@ -80,6 +80,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private String serverHost;
 	private int serverId;
 
+	private boolean hasLabyMod;
+
 	private List<GameStarter> gameStarters;
 	private GameStarter gameStarter;
 
@@ -144,6 +146,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		return serverName;
 	}
 
+	public boolean hasLabyMod() {
+		return hasLabyMod;
+	}
+
 	@Override
 	public void onEnable() {
 		/* Set initial variables */
@@ -160,6 +166,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 		gameStarter = null;
 
 		disableScoreboard = false;
+
+		hasLabyMod = Bukkit.getServer().getPluginManager().getPlugin("LabyModAPI") != null;
 
 		/* Create config.yml */
 		saveDefaultConfig();
@@ -681,7 +689,9 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		// NovaLabymodAPI.sendWatermark(e.getPlayer(), true);
 
-		NovaLabymodAPI.updateGameInfo(e.getPlayer(), true, getServerType().getDisplayName(), 0, 0);
+		if (hasLabyMod) {
+			NovaLabymodAPI.updateGameInfo(e.getPlayer(), true, getServerType().getDisplayName(), 0, 0);
+		}
 	}
 
 }
