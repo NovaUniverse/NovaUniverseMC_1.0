@@ -3,6 +3,7 @@ package net.novauniverse.main.gamespecific;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 
+import net.novauniverse.main.modules.NovaGameTimeLimit;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.TextUtils;
@@ -15,7 +16,7 @@ import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 public class UHCv2Handler extends NovaModule implements Listener {
 	private Task updateTask;
 	// public static final int PLAYERS_LEFT_LINE = 1;
-	public static final int COUNTDOWN_COUNTDOWN_LINE = 2;
+	public static final int COUNTDOWN_LINE = 2;
 
 	@Override
 	public String getName() {
@@ -40,11 +41,12 @@ public class UHCv2Handler extends NovaModule implements Listener {
 
 					if (gracePeriodTrigger != null && meetupTrigger != null) {
 						if (gracePeriodTrigger.isRunning()) {
-							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(gracePeriodTrigger.getTicksLeft() / 20));
+							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(gracePeriodTrigger.getTicksLeft() / 20));
 						} else if (meetupTrigger.isRunning()) {
-							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_COUNTDOWN_LINE, ChatColor.GOLD + "Meetup in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
+							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Meetup in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
 						} else {
-							NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_COUNTDOWN_LINE);
+							NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_LINE);
+							NovaGameTimeLimit.getInstance().setShowTimer(true);
 						}
 					} else {
 						Log.error(getName(), "gracePeriodTrigger or meetupTrigger is null");
@@ -58,7 +60,7 @@ public class UHCv2Handler extends NovaModule implements Listener {
 	public void onEnable() throws Exception {
 		updateTask.start();
 
-		// GameStartScoreboardCountdown.getInstance().setCountdownLine(2);
+		NovaGameTimeLimit.getInstance().setTimeLeftLine(COUNTDOWN_LINE);
 	}
 
 	@Override

@@ -25,6 +25,8 @@ public class NovaGameTimeLimit extends NovaModule implements Listener {
 	private int timeLeftLine = DEFAULT_TIME_LEFT_LINE;
 	private BasicTimer timer;
 
+	private boolean showTimer;
+
 	@Override
 	public String getName() {
 		return "NovaGameTimeLimit";
@@ -37,7 +39,9 @@ public class NovaGameTimeLimit extends NovaModule implements Listener {
 	@Override
 	public void onLoad() {
 		NovaGameTimeLimit.instance = this;
-
+		
+		showTimer = true;
+		
 		timer = new BasicTimer(3600);
 
 		timer.addFinishCallback(new Callback() {
@@ -70,7 +74,9 @@ public class NovaGameTimeLimit extends NovaModule implements Listener {
 					}
 				}
 
-				NetherBoardScoreboard.getInstance().setGlobalLine(timeLeftLine, ChatColor.GOLD + "Time left: " + ChatColor.AQUA + TextUtils.secondsToTime(timeLeft));
+				if (showTimer) {
+					NetherBoardScoreboard.getInstance().setGlobalLine(timeLeftLine, ChatColor.GOLD + "Time left: " + ChatColor.AQUA + TextUtils.secondsToTime(timeLeft));
+				}
 			}
 		});
 	}
@@ -83,6 +89,14 @@ public class NovaGameTimeLimit extends NovaModule implements Listener {
 		timer.setTimeLeft(timeLeft);
 	}
 
+	public boolean isShowTimer() {
+		return showTimer;
+	}
+	
+	public void setShowTimer(boolean showTimer) {
+		this.showTimer = showTimer;
+	}
+	
 	public BasicTimer getTimer() {
 		return timer;
 	}
