@@ -42,8 +42,10 @@ public class UHCv2Handler extends NovaModule implements Listener {
 					if (gracePeriodTrigger != null && meetupTrigger != null) {
 						if (gracePeriodTrigger.isRunning()) {
 							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(gracePeriodTrigger.getTicksLeft() / 20));
+							NovaGameTimeLimit.getInstance().setShowTimer(false);
 						} else if (meetupTrigger.isRunning()) {
 							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Meetup in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
+							NovaGameTimeLimit.getInstance().setShowTimer(false);
 						} else {
 							NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_LINE);
 							NovaGameTimeLimit.getInstance().setShowTimer(true);
@@ -60,6 +62,7 @@ public class UHCv2Handler extends NovaModule implements Listener {
 	public void onEnable() throws Exception {
 		updateTask.start();
 
+		NovaGameTimeLimit.getInstance().setShowTimer(false);
 		NovaGameTimeLimit.getInstance().setTimeLeftLine(COUNTDOWN_LINE);
 	}
 
