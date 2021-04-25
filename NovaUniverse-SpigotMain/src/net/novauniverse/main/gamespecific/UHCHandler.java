@@ -16,7 +16,7 @@ public class UHCHandler extends NovaModule implements Listener {
 
 	private boolean borderCountdownShown;
 
-	public static final int PLAYERS_LEFT_LINE = 1;
+	//public static final int PLAYERS_LEFT_LINE = 1;
 	public static final int BORDER_COUNTDOWN_LINE = 2;
 
 	@Override
@@ -32,9 +32,9 @@ public class UHCHandler extends NovaModule implements Listener {
 			@Override
 			public void run() {
 				if (GameManager.getInstance().hasGame()) {
-					if (GameManager.getInstance().getActiveGame().hasStarted()) {
-						NetherBoardScoreboard.getInstance().setGlobalLine(PLAYERS_LEFT_LINE, ChatColor.AQUA + "" + GameManager.getInstance().getActiveGame().getPlayers().size() + ChatColor.GOLD + " Players left");
-					}
+					//if (GameManager.getInstance().getActiveGame().hasStarted()) {
+					//	NetherBoardScoreboard.getInstance().setGlobalLine(PLAYERS_LEFT_LINE, ChatColor.AQUA + "" + GameManager.getInstance().getActiveGame().getPlayers().size() + ChatColor.GOLD + " Players left");
+					//}
 
 					DelayedGameTrigger borderTrigger = (DelayedGameTrigger) GameManager.getInstance().getActiveGame().getTrigger("novacore.worldborder.start");
 

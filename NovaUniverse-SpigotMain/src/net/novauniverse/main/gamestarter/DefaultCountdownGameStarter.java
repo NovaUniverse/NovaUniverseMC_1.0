@@ -15,7 +15,7 @@ import net.zeeraa.novacore.spigot.teams.TeamManager;
 public class DefaultCountdownGameStarter extends GameStarter {
 	private Task checkTask;
 
-	public static final int START_TIME = 180;
+	public static final int START_TIME = 120;
 	public static final int START_TIME_HALF = 60;
 
 	private int startTimeOverride = -1;

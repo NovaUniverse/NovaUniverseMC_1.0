@@ -18,8 +18,10 @@ import net.novauniverse.main.gamespecific.DeathSwapHandler;
 import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
+import net.novauniverse.main.gamespecific.UHCv2Handler;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.modules.GameEndManager;
+import net.novauniverse.main.modules.NovaScoreboard;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
 import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
@@ -67,15 +69,31 @@ public class GameEventListener implements Listener {
 			break;
 
 		case "uhc":
+			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			ModuleManager.enable(UHCHandler.class);
 			break;
 
+		case "uhcv2":
+			NovaScoreboard.getInstance().setPlayersLeftLine(1);
+			ModuleManager.enable(UHCv2Handler.class);
+			break;
+
+			
 		case "deathswap":
+			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			ModuleManager.enable(DeathSwapHandler.class);
 			break;
 
 		case "manhunt":
 			ModuleManager.enable(ManhuntHandler.class);
+			break;
+			
+		case "survivalgames":
+			NovaScoreboard.getInstance().setPlayersLeftLine(1);
+			break;
+			
+		case "skywars":
+			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			break;
 
 		default:

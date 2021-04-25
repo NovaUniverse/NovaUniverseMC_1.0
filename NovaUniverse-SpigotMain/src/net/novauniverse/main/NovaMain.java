@@ -22,6 +22,7 @@ import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.commands.Base64DumpItemCommand;
+import net.novauniverse.main.commands.DiscordCommand;
 import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
@@ -31,6 +32,7 @@ import net.novauniverse.main.gamespecific.DeathSwapHandler;
 import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
+import net.novauniverse.main.gamespecific.UHCv2Handler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
@@ -39,10 +41,13 @@ import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.novauniverse.main.modules.NoEnderPearlDamage;
 import net.novauniverse.main.modules.NovaGameTimeLimit;
+import net.novauniverse.main.modules.NovaScoreboard;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
 import net.novauniverse.main.modules.shutdownrequest.CheckShutdownRequest;
+import net.novauniverse.main.modules.utils.GameInterface;
+import net.novauniverse.main.modules.utils.NovaGameEngineInterface;
 import net.novauniverse.main.pluginmessagelistener.NovaPluginMessageListener;
 import net.novauniverse.main.serverfinder.ServerFinder;
 import net.novauniverse.main.servericons.ServerIconIndex;
@@ -94,8 +99,18 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	private boolean disableScoreboard;
 
+	private GameInterface gameInterface;
+	
 	public static NovaMain getInstance() {
 		return instance;
+	}
+	
+	public GameInterface getGameInterface() {
+		return gameInterface;
+	}
+	
+	public boolean hasGameInterface() {
+		return gameInterface != null;
 	}
 
 	public NovaNetworkManager getNetworkManager() {
@@ -323,6 +338,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		/* Check configuration value: use_teams */
 		if (NovaCore.isNovaGameEngineEnabled()) {
+			gameInterface = new NovaGameEngineInterface();
 			if (config.has("use_teams")) {
 				if (config.getBoolean("use_teams")) {
 					useTeams = true;
@@ -486,6 +502,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		ModuleManager.loadModule(GameStartScoreboardCountdown.class);
 		ModuleManager.loadModule(NovaSetReconnectServer.class);
 		ModuleManager.loadModule(CheckShutdownRequest.class, true);
+		ModuleManager.loadModule(NovaScoreboard.class, true);
 
 		if (NovaCore.isNovaGameEngineEnabled()) {
 			ModuleManager.loadModule(NovaGameTimeLimit.class, true);
@@ -493,6 +510,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			/* Game specific */
 			ModuleManager.loadModule(MissileWarsHandler.class);
 			ModuleManager.loadModule(UHCHandler.class);
+			ModuleManager.loadModule(UHCv2Handler.class);
 			ModuleManager.loadModule(DeathSwapHandler.class);
 			ModuleManager.loadModule(ManhuntHandler.class);
 
@@ -616,7 +634,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}
 
 		NetherBoardScoreboard.getInstance().setDefaultTitle(ChatColor.AQUA + "" + ChatColor.BOLD + "NovaUniverse");
-		NetherBoardScoreboard.getInstance().setGlobalLine(14, ChatColor.YELLOW + "https://novauniverse.net");
+		NetherBoardScoreboard.getInstance().setGlobalLine(14, ChatColor.YELLOW + "novauniverse.net");
 
 		if (gameStarter != null) {
 			ModuleManager.enable(GameStartScoreboardCountdown.class);
@@ -628,6 +646,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		CommandRegistry.registerCommand(new Base64DumpItemCommand());
 		CommandRegistry.registerCommand(new ReconnectCommand());
 		CommandRegistry.registerCommand(new WhereAmICommand());
+		CommandRegistry.registerCommand(new DiscordCommand());
 
 		getServer().getMessenger().registerIncomingPluginChannel(this, "novauniverse:data", new NovaPluginMessageListener());
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "novauniverse:data");

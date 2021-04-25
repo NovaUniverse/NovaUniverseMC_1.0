@@ -187,7 +187,7 @@ public class NovaUniverseLobby extends NovaPlugin {
 			e.printStackTrace();
 		}
 		
-		NetherBoardScoreboard.getInstance().setGlobalLine(13, ChatColor.YELLOW + "discord.gg/q3WgakdHTy");
+		//NetherBoardScoreboard.getInstance().setGlobalLine(13, ChatColor.YELLOW + "discord.gg/q3WgakdHTy");
 	}
 
 	@Override

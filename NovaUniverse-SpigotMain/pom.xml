@@ -177,6 +177,13 @@
 		
 		<dependency>
 			<groupId>net.novauniverse</groupId>
+			<artifactId>NovaUHCv2</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.novauniverse</groupId>
 			<artifactId>NovaDeathSwap</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
