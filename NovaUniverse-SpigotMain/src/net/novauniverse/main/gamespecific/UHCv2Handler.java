@@ -23,6 +23,8 @@ public class UHCv2Handler extends NovaModule implements Listener {
 		return "UHCv2Handler";
 	}
 
+	private boolean cleanCountdownLine;
+
 	@Override
 	public void onLoad() {
 		updateTask = new SimpleTask(new Runnable() {
@@ -41,13 +43,18 @@ public class UHCv2Handler extends NovaModule implements Listener {
 
 					if (gracePeriodTrigger != null && meetupTrigger != null) {
 						if (gracePeriodTrigger.isRunning()) {
+							cleanCountdownLine = true;
 							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(gracePeriodTrigger.getTicksLeft() / 20));
 							NovaGameTimeLimit.getInstance().setShowTimer(false);
 						} else if (meetupTrigger.isRunning()) {
+							cleanCountdownLine = true;
 							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_LINE, ChatColor.GOLD + "Meetup in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
 							NovaGameTimeLimit.getInstance().setShowTimer(false);
 						} else {
-							NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_LINE);
+							if (cleanCountdownLine) {
+								cleanCountdownLine = false;
+								NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_LINE);
+							}
 							NovaGameTimeLimit.getInstance().setShowTimer(true);
 						}
 					} else {
@@ -64,6 +71,8 @@ public class UHCv2Handler extends NovaModule implements Listener {
 
 		NovaGameTimeLimit.getInstance().setShowTimer(false);
 		NovaGameTimeLimit.getInstance().setTimeLeftLine(COUNTDOWN_LINE);
+
+		cleanCountdownLine = false;
 	}
 
 	@Override
