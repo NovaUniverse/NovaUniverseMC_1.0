@@ -42,7 +42,7 @@ public class UHCv2Handler extends NovaModule implements Listener {
 						if (gracePeriodTrigger.isRunning()) {
 							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(gracePeriodTrigger.getTicksLeft() / 20));
 						} else if (meetupTrigger.isRunning()) {
-							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_COUNTDOWN_LINE, ChatColor.GOLD + "Graceperiod end: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
+							NetherBoardScoreboard.getInstance().setGlobalLine(COUNTDOWN_COUNTDOWN_LINE, ChatColor.GOLD + "Meetup in: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(meetupTrigger.getTicksLeft() / 20));
 						} else {
 							NetherBoardScoreboard.getInstance().clearGlobalLine(COUNTDOWN_COUNTDOWN_LINE);
 						}
