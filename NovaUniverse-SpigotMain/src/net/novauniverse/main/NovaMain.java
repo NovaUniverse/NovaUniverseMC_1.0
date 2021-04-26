@@ -45,6 +45,9 @@ import net.novauniverse.main.modules.NovaScoreboard;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
+import net.novauniverse.main.modules.head.EdibleHeads;
+import net.novauniverse.main.modules.head.GoldenHead;
+import net.novauniverse.main.modules.head.PlayerHeadDrop;
 import net.novauniverse.main.modules.shutdownrequest.CheckShutdownRequest;
 import net.novauniverse.main.modules.utils.GameInterface;
 import net.novauniverse.main.modules.utils.NovaGameEngineInterface;
@@ -503,6 +506,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 		ModuleManager.loadModule(NovaSetReconnectServer.class);
 		ModuleManager.loadModule(CheckShutdownRequest.class, true);
 		ModuleManager.loadModule(NovaScoreboard.class, true);
+		
+		ModuleManager.loadModule(PlayerHeadDrop.class, false);
+		ModuleManager.loadModule(GoldenHead.class, false);
+		ModuleManager.loadModule(EdibleHeads.class, false);
 
 		if (NovaCore.isNovaGameEngineEnabled()) {
 			ModuleManager.loadModule(NovaGameTimeLimit.class, true);
@@ -516,6 +523,18 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 			/* Listeners */
 			Bukkit.getServer().getPluginManager().registerEvents(new GameEventListener(), this);
+		}
+		
+		if(config.getBoolean("enable_golden_heads")) {
+			ModuleManager.enable(GoldenHead.class);
+		}
+		
+		if(config.getBoolean("enable_edible_heads")) {
+			ModuleManager.enable(EdibleHeads.class);
+		}
+		
+		if(config.getBoolean("enable_player_head_drop")) {
+			ModuleManager.enable(PlayerHeadDrop.class);
 		}
 
 		/* Listeners */

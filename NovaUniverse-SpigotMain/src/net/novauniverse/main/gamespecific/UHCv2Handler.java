@@ -31,13 +31,6 @@ public class UHCv2Handler extends NovaModule implements Listener {
 			@Override
 			public void run() {
 				if (GameManager.getInstance().hasGame()) {
-					// if (GameManager.getInstance().getActiveGame().hasStarted()) {
-					// NetherBoardScoreboard.getInstance().setGlobalLine(PLAYERS_LEFT_LINE,
-					// ChatColor.AQUA + "" +
-					// GameManager.getInstance().getActiveGame().getPlayers().size() +
-					// ChatColor.GOLD + " Players left");
-					// }
-
 					DelayedGameTrigger gracePeriodTrigger = (DelayedGameTrigger) GameManager.getInstance().getActiveGame().getTrigger("novauniverse.uhc.endgraceperiod");
 					DelayedGameTrigger meetupTrigger = (DelayedGameTrigger) GameManager.getInstance().getActiveGame().getTrigger("novauniverse.uhc.meetup");
 

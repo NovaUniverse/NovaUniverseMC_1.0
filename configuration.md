@@ -32,6 +32,10 @@ Optional values are not required but might be needed for special server configur
 * `solo_team_count` [int] (Optional) Set the amount of solo teams for the solo team manager
 * `disable_scoreboard` [bool] (Optional) Disable the scoreboard
 * `set_reconnect_server` [bool] (Optional) If enabled the player can use /reconnect to reconnect to this server
+
+* `enable_golden_heads` [bool] enable the golden heads module
+* `enable_edible_heads` [bool] enable the edible heads module
+* `enable_player_head_drop` [bool] enable the player head drop module
 ---
 
 # Team Managers
