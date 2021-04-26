@@ -33,11 +33,11 @@ public class GoldenHead extends NovaModule implements Listener {
 
 		recipe.shape("AAA", "ABA", "AAA");
 		recipe.setIngredient('A', Material.GOLD_INGOT);
-		
+
 		VersionIndependantUtils.get().setShapedRecipeIngredientAsPlayerSkull(recipe, 'B');
-		
-		//recipe.setIngredient('B', skull);
-		
+
+		// recipe.setIngredient('B', skull);
+
 		Bukkit.getServer().addRecipe(recipe);
 	}
 
@@ -49,7 +49,7 @@ public class GoldenHead extends NovaModule implements Listener {
 		meta.setDisplayName(ChatColor.GOLD + "Golden head");
 
 		stack.setItemMeta(meta);
-		
+
 		stack = NBTEditor.set(stack, 1, "novauniverse", "goldenhead");
 
 		return stack;
@@ -69,11 +69,11 @@ public class GoldenHead extends NovaModule implements Listener {
 				if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					e.setCancelled(true);
 					Player p = e.getPlayer();
-					if (e.getItem().getAmount() > 1) {
-						e.getItem().setAmount(e.getItem().getAmount() - 1);
+					if (VersionIndependantUtils.get().getItemInMainHand(p).getAmount() > 1) {
+						VersionIndependantUtils.get().getItemInMainHand(p).setAmount(e.getItem().getAmount() - 1);
 					} else {
-						if (p.getItemInHand().getAmount() == 1) {
-							p.setItemInHand(null);
+						if (VersionIndependantUtils.get().getItemInMainHand(p).getAmount() == 1) {
+							VersionIndependantUtils.get().setItemInMainHand(p, ItemBuilder.AIR);
 						} else {
 							boolean removed = false;
 							for (int i = 0; i < p.getInventory().getSize(); i++) {

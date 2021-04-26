@@ -17,6 +17,7 @@ public class UHCv2Handler extends NovaModule implements Listener {
 	private Task updateTask;
 	// public static final int PLAYERS_LEFT_LINE = 1;
 	public static final int COUNTDOWN_LINE = 2;
+	public static final int FINAL_HEAL_LINE = 3;
 
 	@Override
 	public String getName() {
@@ -52,6 +53,16 @@ public class UHCv2Handler extends NovaModule implements Listener {
 						}
 					} else {
 						Log.error(getName(), "gracePeriodTrigger or meetupTrigger is null");
+					}
+
+					if (GameManager.getInstance().getActiveGame().getTrigger("novauniverse.uhc.finalheal") != null) {
+						DelayedGameTrigger finalHealTrigger = (DelayedGameTrigger) GameManager.getInstance().getActiveGame().getTrigger("novauniverse.uhc.finalheal");
+
+						if (finalHealTrigger.isRunning()) {
+							NetherBoardScoreboard.getInstance().setGlobalLine(FINAL_HEAL_LINE, ChatColor.GOLD + "Final heal: " + ChatColor.AQUA + TextUtils.secondsToHoursMinutes(finalHealTrigger.getTicksLeft() / 20));
+						} else {
+							NetherBoardScoreboard.getInstance().clearGlobalLine(FINAL_HEAL_LINE);
+						}
 					}
 				}
 			}
