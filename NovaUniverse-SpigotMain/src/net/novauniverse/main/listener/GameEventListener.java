@@ -71,29 +71,34 @@ public class GameEventListener implements Listener {
 		case "uhc":
 			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			ModuleManager.enable(UHCHandler.class);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
 
 		case "uhcv2":
 			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			ModuleManager.enable(UHCv2Handler.class);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
 
-			
 		case "deathswap":
 			NovaScoreboard.getInstance().setPlayersLeftLine(1);
 			ModuleManager.enable(DeathSwapHandler.class);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
 
 		case "manhunt":
 			ModuleManager.enable(ManhuntHandler.class);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
-			
+
 		case "survivalgames":
 			NovaScoreboard.getInstance().setPlayersLeftLine(1);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
-			
+
 		case "skywars":
 			NovaScoreboard.getInstance().setPlayersLeftLine(1);
+			NovaMain.getInstance().enableSpectateGameCommand();
 			break;
 
 		default:
@@ -115,7 +120,6 @@ public class GameEventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-
 			if (NovaMain.getInstance().hasLabyMod()) {
 				NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
 			}
@@ -164,7 +168,7 @@ public class GameEventListener implements Listener {
 						sub = ChatColor.RED + "Killed by " + ChatColor.AQUA + e.getKiller().getName();
 					}
 
-					//player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
+					// player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
 					VersionIndependantUtils.get().playSound(player, player.getLocation(), VersionIndependantSound.WITHER_HURT, 1F, 1F);
 					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
 

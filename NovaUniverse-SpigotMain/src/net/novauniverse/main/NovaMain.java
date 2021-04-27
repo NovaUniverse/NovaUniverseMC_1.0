@@ -27,6 +27,7 @@ import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
+import net.novauniverse.main.commands.SpectateGameCommand;
 import net.novauniverse.main.commands.WhereAmICommand;
 import net.novauniverse.main.gamespecific.DeathSwapHandler;
 import net.novauniverse.main.gamespecific.ManhuntHandler;
@@ -166,6 +167,13 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 	public boolean hasLabyMod() {
 		return hasLabyMod;
+	}
+
+	public void enableSpectateGameCommand() {
+		if (!CommandRegistry.isRegistered(SpectateGameCommand.class)) {
+			Log.info("Enabling SpectateGameCommand");
+			CommandRegistry.registerCommand(new SpectateGameCommand());
+		}
 	}
 
 	@Override

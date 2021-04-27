@@ -2,15 +2,15 @@
 	"language_code": "en-us",
 	"language_name": "English",
 	"content": {
-		"novauniverse.game.gameover.winner.player": "§a§lGAME OVER> §6§lWinning player: %s§l%s",
-		"novauniverse.game.gameover.winner.team": "§a§lGAME OVER> §6§lWinning team: %s§l%s",
+		"novauniverse.game.gameover.winner.player": "Â§aÂ§lGAME OVER> Â§6Â§lWinner: %sÂ§l%s",
+		"novauniverse.game.gameover.winner.team": "Â§aÂ§lGAME OVER> Â§6Â§lWinner: %sÂ§l%s",
 		
-		"novauniverse.game.sending_you_to_lobby_10_seconds": "§bSending you to the lobby in 10 seconds",
-		"novauniverse.game.server.restarting": "§b%s server restarting, Please reconnect",
+		"novauniverse.game.sending_you_to_lobby_10_seconds": "Â§bSending you to the lobby in 10 seconds",
+		"novauniverse.game.server.restarting": "Â§b%s server restarting, Please reconnect",
 		
-		"novauniverse.team.solo.added": "§aAdded you to a solo team",
-		"novauniverse.team.no_team_avaliable": "§cYou joined as a spectator since there was no avaliable teams",
+		"novauniverse.team.solo.added": "Â§aAdded you to a solo team",
+		"novauniverse.team.no_team_avaliable": "Â§cYou joined as a spectator since there was no avaliable teams",
 		
-		"novauniverse.game_load_error": "§4§lFailed to start game. Sending you to the lobby in 10 seconds"
+		"novauniverse.game_load_error": "Â§4Â§lFailed to start game. Sending you to the lobby in 10 seconds"
 	}
 }
