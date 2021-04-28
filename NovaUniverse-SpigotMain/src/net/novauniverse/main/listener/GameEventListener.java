@@ -22,6 +22,7 @@ import net.novauniverse.main.gamespecific.UHCv2Handler;
 import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.NovaScoreboard;
+import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
 import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
@@ -51,6 +52,8 @@ public class GameEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameLoad(GameLoadedEvent e) {
+		ModuleManager.require(NovaSetReconnectServer.class);
+
 		if (!NovaMain.getInstance().isDisableScoreboard()) {
 			NetherBoardScoreboard.getInstance().setGlobalLine(0, ChatColor.YELLOW + "" + ChatColor.BOLD + e.getGame().getDisplayName());
 		}
