@@ -1,6 +1,5 @@
 package net.novauniverse.main.modules.head;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,34 +10,36 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.customcrafting.CustomCraftingManager;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 import net.zeeraa.novacore.spigot.utils.ItemBuilder;
 
 public class GoldenHead extends NovaModule implements Listener {
+	private static GoldenHead instance;
+	
+	public static GoldenHead getInstance() {
+		return instance;
+	}
+	
 	@Override
 	public String getName() {
-		return "TCGoldenHead";
+		return "NovaGoldenHead";
 	}
 
 	@Override
+	public void onLoad() {
+		GoldenHead.instance = this;
+	}
+	
+	@Override
 	public void onEnable() throws Exception {
-		ShapedRecipe recipe = new ShapedRecipe(getItem());
-
-		recipe.shape("AAA", "ABA", "AAA");
-		recipe.setIngredient('A', Material.GOLD_INGOT);
-
-		VersionIndependantUtils.get().setShapedRecipeIngredientAsPlayerSkull(recipe, 'B');
-
-		// recipe.setIngredient('B', skull);
-
-		Bukkit.getServer().addRecipe(recipe);
+		CustomCraftingManager.getInstance().addRecipe(GoldenHeadRecipe.class);
 	}
 
 	public ItemStack getItem() {
