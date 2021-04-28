@@ -72,7 +72,11 @@ public class NovaSetReconnectServer extends NovaModule implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		if (GameManager.getInstance().isEnabled()) {
-			if (GameManager.getInstance().hasGame()) {
+			if (!GameManager.getInstance().hasGame()) {
+				return;
+			}
+			
+			if (!GameManager.getInstance().getActiveGame().hasStarted()) {
 				return;
 			}
 		}
