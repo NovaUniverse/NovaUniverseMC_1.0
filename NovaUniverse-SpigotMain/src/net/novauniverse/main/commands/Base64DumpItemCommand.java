@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
 
+import net.novauniverse.commons.hastebin.ZeeraasHastebin;
 import net.novauniverse.main.NovaMain;
+import net.zeeraa.novacore.commons.async.AsyncManager;
 import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.command.AllowedSenders;
 import net.zeeraa.novacore.spigot.command.NovaCommand;
@@ -47,22 +49,36 @@ public class Base64DumpItemCommand extends NovaCommand {
 			return false;
 		}
 
-		// Hastebin hastebin = new Hastebin();
+		ZeeraasHastebin hastebin = new ZeeraasHastebin();
 
-		// try {
-		/*
-		 * String url = hastebin.post(base64, true);
-		 * 
-		 * player.sendMessage(ChatColor.GREEN + url);
-		 */
+		AsyncManager.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				String url = null;
+				String error = null;
+				try {
+					url = hastebin.post(base64, true);
+				} catch (Exception e) {
+					error = e.getMessage();
+					e.printStackTrace();
+				}
 
-		System.out.println(base64);
-		player.sendMessage(ChatColor.GREEN + "Check console for result");
-		// } catch (IOException e) {
-		// player.sendMessage(ChatColor.DARK_RED + e.getMessage());
-		// e.printStackTrace();
-		// return false;
-		// }
+				final String finalUrl = url;
+				final String finalError = error;
+
+				AsyncManager.runSync(new Runnable() {
+					@Override
+					public void run() {
+						if (finalUrl != null) {
+
+							player.sendMessage(ChatColor.GREEN + finalUrl);
+						} else {
+							player.sendMessage(ChatColor.RED + "Failed to post data. " + finalError);
+						}
+					}
+				});
+			}
+		});
 
 		return true;
 	}

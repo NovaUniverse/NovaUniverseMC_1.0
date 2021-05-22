@@ -3,9 +3,12 @@ package net.novauniverse.bungeecord;
 import java.net.InetSocketAddress;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import net.md_5.bungee.api.ChatColor;
@@ -26,6 +29,7 @@ import net.novauniverse.bungeecord.chatlogger.ChatLogger;
 import net.novauniverse.bungeecord.chatlogger.serverfinder.ServerFinder;
 import net.novauniverse.bungeecord.commands.JoinCommand;
 import net.novauniverse.bungeecord.commands.SpectateCommand;
+import net.novauniverse.bungeecord.domainbind.DomainBindListener;
 import net.novauniverse.bungeecord.pluginmessagelistener.PluginMessageListener;
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.commons.network.NovaNetworkManager;
@@ -45,12 +49,17 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 	private Task networkUpdateTask;
 	private Task playerHeartbeatTask;
+	private Task domainBindUpdateTask;
 	private Task cleanupTask;
 	private NovaNetworkManager networkManager;
+
+	private DomainBindListener domainBindListener;
 
 	private NovaServerType lobbyType;
 
 	private String defaultServerName;
+
+	private Map<String, NovaServerType> domainBinds;
 
 	public static NovaUniverseBungeecord getInstance() {
 		return instance;
@@ -60,6 +69,14 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		return networkManager;
 	}
 
+	public Map<String, NovaServerType> getDomainBinds() {
+		return domainBinds;
+	}
+
+	public DomainBindListener getDomainBindListener() {
+		return domainBindListener;
+	}
+
 	@Override
 	public void onEnable() {
 		NovaUniverseBungeecord.instance = this;
@@ -67,6 +84,8 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		networkUpdateTask = null;
 		playerHeartbeatTask = null;
 		cleanupTask = null;
+
+		domainBinds = new HashMap<>();
 
 		saveDefaultConfiguration();
 
@@ -124,6 +143,14 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		}, 1, 1, TimeUnit.SECONDS);
 		networkUpdateTask.start();
 
+		domainBindUpdateTask = new AdvancedTask(this, new Runnable() {
+			@Override
+			public void run() {
+				updateDomainBinds();
+			}
+		}, 60, 60, TimeUnit.SECONDS);
+		domainBindUpdateTask.start();
+
 		playerHeartbeatTask = new AdvancedTask(new Runnable() {
 			@Override
 			public void run() {
@@ -158,7 +185,10 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		}, 10, TimeUnit.SECONDS);
 		cleanupTask.start();
 
+		domainBindListener = new DomainBindListener();
+
 		getProxy().getPluginManager().registerListener(this, this);
+		getProxy().getPluginManager().registerListener(this, domainBindListener);
 		getProxy().getPluginManager().registerListener(this, new ChatLogger());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageListener());
 
@@ -166,6 +196,8 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new SpectateCommand());
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinCommand());
+
+		updateDomainBinds();
 	}
 
 	@Override
@@ -173,6 +205,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		Task.tryStopTask(playerHeartbeatTask);
 		Task.tryStopTask(networkUpdateTask);
 		Task.tryStopTask(cleanupTask);
+		Task.tryStopTask(domainBindUpdateTask);
 
 		try {
 			if (NovaUniverseCommons.getDbConnection() != null) {
@@ -188,6 +221,38 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		getProxy().getScheduler().cancel(this);
 		getProxy().getPluginManager().unregisterListeners((Plugin) this);
 		getProxy().getPluginManager().unregisterCommands((Plugin) this);
+	}
+
+	private void updateDomainBinds() {
+		String sql = "SELECT domain, target_server_type FROM domain_binds";
+		try {
+			PreparedStatement ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+
+			Map<String, NovaServerType> binds = new HashMap<>();
+
+			while (rs.next()) {
+				String domain = rs.getString("domain").toLowerCase();
+				int typeId = rs.getInt("target_server_type");
+
+				NovaServerType serverType = this.getNetworkManager().getServerTypeByID(typeId);
+
+				if (serverType != null) {
+					binds.put(domain.toLowerCase(), serverType);
+				} else {
+					Log.warn("Unknown server type " + typeId + " for domain bind " + domain);
+				}
+			}
+
+			this.domainBinds.clear();
+			this.domainBinds = binds;
+
+			ps.close();
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.error("Failed to fetch domain binds");
+		}
 	}
 
 	private void updateServerList() {
@@ -228,6 +293,27 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		}
 
 		if (e.getTarget().getName().equalsIgnoreCase(defaultServerName)) {
+			if (domainBindListener.getRedirect().containsKey(e.getPlayer().getName())) {
+				NovaServerType targetType = domainBindListener.getRedirect().get(e.getPlayer().getName());
+				domainBindListener.getRedirect().remove(e.getPlayer().getName());
+
+				NovaServer targetServer;
+				try {
+					targetServer = networkManager.findServer(targetType);
+				} catch (SQLException e1) {
+					Log.error("Failed to fetch target server of type " + targetType.getDisplayName() + " for player " + e.getPlayer().getDisplayName());
+					e.getPlayer().disconnect(new TextComponent(ChatColor.DARK_RED + "Could not find a server of type " + targetType.getDisplayName() + " for you\nCaused by: " + e1.getClass().getName()));
+					return;
+				}
+
+				if (targetServer == null) {
+					e.getPlayer().sendMessage(new TextComponent(ChatColor.RED + "Could not find any avaliable servers of type " + targetType.getDisplayName() + ". Please try again later"));
+				} else {
+					e.setTarget(ProxyServer.getInstance().getServerInfo(targetServer.getName()));
+					return;
+				}
+			}
+
 			try {
 				NovaServer targetServer = networkManager.findServer(lobbyType);
 

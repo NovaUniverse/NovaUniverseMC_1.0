@@ -23,6 +23,7 @@ import net.novauniverse.commons.network.NovaNetworkManager;
 import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.main.commands.Base64DumpItemCommand;
 import net.novauniverse.main.commands.DiscordCommand;
+import net.novauniverse.main.commands.DumpNetworkState;
 import net.novauniverse.main.commands.JoinServerGroupCommand;
 import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
@@ -44,6 +45,7 @@ import net.novauniverse.main.modules.NoEnderPearlDamage;
 import net.novauniverse.main.modules.NovaGameTimeLimit;
 import net.novauniverse.main.modules.NovaScoreboard;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
+import net.novauniverse.main.modules.PreventingAleksaFromBreakingTheServer;
 import net.novauniverse.main.modules.TabList;
 import net.novauniverse.main.modules.WinMessage;
 import net.novauniverse.main.modules.head.EdibleHeads;
@@ -66,7 +68,6 @@ import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.JSONFileType;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
-import net.zeeraa.novacore.spigot.abstraction.events.VersionIndependantPlayerAchievementAwardedEvent;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
@@ -507,19 +508,20 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		/* Load modules */
 		ModuleManager.loadModule(NoEnderPearlDamage.class, noPearlDamage);
-		ModuleManager.loadModule(GameEndManager.class, true);
-		ModuleManager.loadModule(WinMessage.class, true);
 		ModuleManager.loadModule(TabList.class, true);
-		ModuleManager.loadModule(GameStartScoreboardCountdown.class);
 		ModuleManager.loadModule(NovaSetReconnectServer.class);
 		ModuleManager.loadModule(CheckShutdownRequest.class, true);
 		ModuleManager.loadModule(NovaScoreboard.class, true);
-
+		ModuleManager.loadModule(PreventingAleksaFromBreakingTheServer.class, true);
 		ModuleManager.loadModule(PlayerHeadDrop.class, false);
 		ModuleManager.loadModule(GoldenHead.class, false);
 		ModuleManager.loadModule(EdibleHeads.class, false);
 
 		if (NovaCore.isNovaGameEngineEnabled()) {
+			ModuleManager.loadModule(GameEndManager.class, true);
+			ModuleManager.loadModule(WinMessage.class, true);
+			ModuleManager.loadModule(GameStartScoreboardCountdown.class);
+
 			ModuleManager.loadModule(NovaGameTimeLimit.class, true);
 
 			/* Game specific */
@@ -677,6 +679,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		CommandRegistry.registerCommand(new ReloadNetworkManagerCommand());
 		CommandRegistry.registerCommand(new ShowServersCommand());
 		CommandRegistry.registerCommand(new Base64DumpItemCommand());
+		CommandRegistry.registerCommand(new DumpNetworkState());
 		CommandRegistry.registerCommand(new ReconnectCommand());
 		CommandRegistry.registerCommand(new WhereAmICommand());
 		CommandRegistry.registerCommand(new DiscordCommand());
@@ -730,11 +733,6 @@ public class NovaMain extends NovaPlugin implements Listener {
 		} else {
 			NovaUniverseCommons.getServerFinder().joinServerType(player.getUniqueId(), fallbackLobbyServerType);
 		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onTooLongName(VersionIndependantPlayerAchievementAwardedEvent e) {
-		e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
