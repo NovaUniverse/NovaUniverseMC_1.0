@@ -20,6 +20,7 @@ import net.novauniverse.commons.network.server.NovaServerType;
 import net.novauniverse.commons.utils.ExpiringHashMap;
 import net.novauniverse.commons.utils.ExpiryCondition;
 import net.zeeraa.novacore.commons.NovaCommons;
+import net.zeeraa.novacore.commons.async.AsyncManager;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.RandomGenerator;
@@ -83,89 +84,94 @@ public class NovaNetworkManager {
 	 */
 
 	public void updatePlayerData() {
-		String sql;
-		PreparedStatement ps;
-		ResultSet rs;
+		AsyncManager.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				String sql;
+				PreparedStatement ps;
+				ResultSet rs;
 
-		try {
-			// im sorry for doing this to you MySQL server
-			sql = "SELECT id, uuid, username, is_online, server_id, party_id FROM players";
-			ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
-			rs = ps.executeQuery();
+				try {
+					// im sorry for doing this to you MySQL server
+					sql = "SELECT id, uuid, username, is_online, server_id, party_id FROM players";
+					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+					rs = ps.executeQuery();
 
-			while (rs.next()) {
-				UUID uuid = UUID.fromString(rs.getString("uuid"));
-				boolean online = rs.getBoolean("is_online");
+					while (rs.next()) {
+						UUID uuid = UUID.fromString(rs.getString("uuid"));
+						boolean online = rs.getBoolean("is_online");
 
-				if (novaPlayerList.containsKey(uuid)) {
-					NovaPlayer player = getNovaPlayer(uuid);
+						if (novaPlayerList.containsKey(uuid)) {
+							NovaPlayer player = getNovaPlayer(uuid);
 
-					player.setServerId(rs.getInt("server_id"));
-					player.setOnline(rs.getBoolean("is_online"));
-					player.setPartyId(rs.getInt("party_id"));
-				} else if (online) {
-					NovaPlayer player = createFromResultSet(rs);
-					novaPlayerList.put(uuid, player);
-				}
-			}
-
-			rs.close();
-			ps.close();
-
-			// now that my trash solution for fetching players GET READY FOR THIS HORRIBLE
-			// CODE TO FETCH TEAMS
-
-			sql = "SELECT party.id AS party_id, party.owner AS party_owner, players.uuid AS player_uuid FROM party LEFT JOIN players ON players.party_id = party.id";
-			ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
-			rs = ps.executeQuery();
-
-			// If this following code does not explain how desperate i am to get this
-			// working i dont know what will
-			HashMap<Integer, List<UUID>> partyMembers = new HashMap<Integer, List<UUID>>();
-			HashMap<Integer, Integer> partyOwner = new HashMap<Integer, Integer>();
-
-			while (rs.next()) {
-				int partyId = rs.getInt("party_id");
-
-				if (!partyMembers.containsKey(partyId)) {
-					partyMembers.put(partyId, new ArrayList<UUID>());
-				}
-
-				if (!partyOwner.containsKey(partyId)) {
-					partyOwner.put(partyId, rs.getInt("party_owner"));
-				}
-
-				if (rs.getString("uuid") != null) {
-					partyMembers.get(partyId).add(UUID.fromString(rs.getString("uuid")));
-				}
-			}
-
-			for (Integer i : partyMembers.keySet()) {
-				if (novaPartyList.containsKey(i)) {
-					List<UUID> members = partyMembers.get(i);
-
-					if (members.size() == 0) {
-						// dead party
-						novaPartyList.remove(i);
-						continue;
+							player.setServerId(rs.getInt("server_id"));
+							player.setOnline(rs.getBoolean("is_online"));
+							player.setPartyId(rs.getInt("party_id"));
+						} else if (online) {
+							NovaPlayer player = createFromResultSet(rs);
+							novaPlayerList.put(uuid, player);
+						}
 					}
 
-					NovaParty party = novaPartyList.get(i);
-					party.getMembers().clear();
-					for (UUID uuid : members) {
-						party.getMembers().add(uuid);
+					rs.close();
+					ps.close();
+
+					// now that my trash solution for fetching players GET READY FOR THIS HORRIBLE
+					// CODE TO FETCH TEAMS
+
+					sql = "SELECT party.id AS party_id, party.owner AS party_owner, players.uuid AS player_uuid FROM party LEFT JOIN players ON players.party_id = party.id";
+					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
+					rs = ps.executeQuery();
+
+					// If this following code does not explain how desperate i am to get this
+					// working i dont know what will
+					HashMap<Integer, List<UUID>> partyMembers = new HashMap<Integer, List<UUID>>();
+					HashMap<Integer, Integer> partyOwner = new HashMap<Integer, Integer>();
+
+					while (rs.next()) {
+						int partyId = rs.getInt("party_id");
+
+						if (!partyMembers.containsKey(partyId)) {
+							partyMembers.put(partyId, new ArrayList<UUID>());
+						}
+
+						if (!partyOwner.containsKey(partyId)) {
+							partyOwner.put(partyId, rs.getInt("party_owner"));
+						}
+
+						if (rs.getString("uuid") != null) {
+							partyMembers.get(partyId).add(UUID.fromString(rs.getString("uuid")));
+						}
 					}
 
-					// should always exits but i dont want the whole server crashing for a small
-					// error like this
-					if (partyOwner.containsKey(i)) {
-						party.setOwnerId(partyOwner.get(i));
+					for (Integer i : partyMembers.keySet()) {
+						if (novaPartyList.containsKey(i)) {
+							List<UUID> members = partyMembers.get(i);
+
+							if (members.size() == 0) {
+								// dead party
+								novaPartyList.remove(i);
+								continue;
+							}
+
+							NovaParty party = novaPartyList.get(i);
+							party.getMembers().clear();
+							for (UUID uuid : members) {
+								party.getMembers().add(uuid);
+							}
+
+							// should always exits but i dont want the whole server crashing for a small
+							// error like this
+							if (partyOwner.containsKey(i)) {
+								party.setOwnerId(partyOwner.get(i));
+							}
+						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		});
 	}
 
 	public NovaPlayer getNovaPlayerById(int id) {
@@ -308,69 +314,97 @@ public class NovaNetworkManager {
 			servers.clear();
 		}
 
-		PreparedStatement ps;
-		ResultSet rs;
+		AsyncManager.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					PreparedStatement ps;
+					ResultSet rs;
 
-		ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement("SELECT * FROM servers WHERE TIMESTAMPDIFF(MINUTE, heartbeat, CURRENT_TIMESTAMP) < 3");
-		rs = ps.executeQuery();
+					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement("SELECT * FROM servers WHERE TIMESTAMPDIFF(MINUTE, heartbeat, CURRENT_TIMESTAMP) < 3");
+					rs = ps.executeQuery();
 
-		List<NovaServer> newServers = new ArrayList<NovaServer>();
+					List<NovaServer> newServers = new ArrayList<NovaServer>();
 
-		while (rs.next()) {
-			int typeId = rs.getInt("type_id");
+					while (rs.next()) {
+						int typeId = rs.getInt("type_id");
 
-			NovaServerType type = this.getServerTypeByID(typeId);
+						NovaServerType type = getServerTypeByID(typeId);
 
-			if (type == null) {
-				System.err.println("Missing server type id: " + typeId);
-				continue;
+						if (type == null) {
+							System.err.println("Missing server type id: " + typeId);
+							continue;
+						}
+
+						NovaServer server = new NovaServer(rs.getInt("id"), rs.getString("name"), rs.getString("host"), rs.getInt("port"), type, rs.getBoolean("minigame_started"), rs.getBoolean("has_failed"));
+
+						newServers.add(server);
+					}
+
+					rs.close();
+					ps.close();
+
+					AsyncManager.runSync(new Runnable() {
+						@Override
+						public void run() {
+							for (int i = servers.size() - 1; i >= 0; i--) {
+								NovaServer old = servers.get(i);
+
+								if (!newServers.contains(old)) {
+									servers.remove(i);
+									Log.trace("NetworkManager", "Removing server: " + old.getName() + " " + old.getHost() + ":" + old.getPort());
+								} else {
+									newServers.remove(old);
+								}
+							}
+
+							for (NovaServer newServer : newServers) {
+								servers.add(newServer);
+								Log.trace("NetworkManager", "Adding server: " + newServer.getName() + " " + newServer.getHost() + ":" + newServer.getPort());
+							}
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-
-			NovaServer server = new NovaServer(rs.getInt("id"), rs.getString("name"), rs.getString("host"), rs.getInt("port"), type, rs.getBoolean("minigame_started"), rs.getBoolean("has_failed"));
-
-			newServers.add(server);
-		}
-
-		for (int i = servers.size() - 1; i >= 0; i--) {
-			NovaServer old = servers.get(i);
-
-			if (!newServers.contains(old)) {
-				servers.remove(i);
-				Log.trace("NetworkManager", "Removing server: " + old.getName() + " " + old.getHost() + ":" + old.getPort());
-			} else {
-				newServers.remove(old);
-			}
-		}
-
-		for (NovaServer newServer : newServers) {
-			servers.add(newServer);
-			Log.trace("NetworkManager", "Adding server: " + newServer.getName() + " " + newServer.getHost() + ":" + newServer.getPort());
-		}
-
-		rs.close();
-		ps.close();
+		});
 	}
 
 	public void updatePlayerCount() throws SQLException {
-		PreparedStatement ps;
-		ResultSet rs;
+		AsyncManager.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					PreparedStatement ps;
+					ResultSet rs;
 
-		ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement("CALL get_player_count()");
-		rs = ps.executeQuery();
+					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement("CALL get_player_count()");
+					rs = ps.executeQuery();
 
-		while (rs.next()) {
-			int typeId = rs.getInt("server_type_id");
-			int playerCount = rs.getInt("player_count");
+					while (rs.next()) {
+						int typeId = rs.getInt("server_type_id");
+						int playerCount = rs.getInt("player_count");
 
-			NovaServerType type = getServerTypeByID(typeId);
+						NovaServerType type = getServerTypeByID(typeId);
 
-			if (type != null) {
-				type.setPlayerCount(playerCount);
+						if (type != null) {
+							AsyncManager.runSync(new Runnable() {
+								@Override
+								public void run() {
+									type.setPlayerCount(playerCount);
+								}
+							});
+						}
+					}
+
+					rs.close();
+					ps.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}
-
-		rs.close();
-		ps.close();
+		});
 	}
 
 	public void clearServers() {
@@ -532,7 +566,7 @@ public class NovaNetworkManager {
 
 		// Log.trace("NetworkManager", "NovaNetworkManager.sendPlayerToServer() " +
 		// server);
-		
+
 		if (server != null) {
 			NovaCommons.getPlatformIndependentBungeecordAPI().sendPlayerToServer(player, server.getName());
 			return true;

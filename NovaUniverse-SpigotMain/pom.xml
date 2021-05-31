@@ -137,6 +137,7 @@
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.5.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -207,7 +208,7 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20200518</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
