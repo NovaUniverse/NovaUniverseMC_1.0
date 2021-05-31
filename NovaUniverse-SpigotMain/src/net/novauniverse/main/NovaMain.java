@@ -61,6 +61,7 @@ import net.novauniverse.main.team.skywars.solo.SkywarsSoloTeamManager;
 import net.novauniverse.main.team.solo.SoloTeamManager;
 import net.novauniverse.main.trackers.ClosestPlayerTracker;
 import net.zeeraa.novacore.commons.NovaCommons;
+import net.zeeraa.novacore.commons.async.AsyncManager;
 import net.zeeraa.novacore.commons.database.DBConnection;
 import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
@@ -635,14 +636,19 @@ public class NovaMain extends NovaPlugin implements Listener {
 		/* Register heart beat task */
 		heartbeatTask = new SimpleTask(this, new Runnable() {
 			public void run() {
-				try {
-					if (!NovaNetworkManager.updateHeartbeat(serverId)) {
-						Log.warn("NovaMain", "Warning heartbeat returned a row count of 0");
+				AsyncManager.runAsync(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if (!NovaNetworkManager.updateHeartbeat(serverId)) {
+								Log.warn("NovaMain", "Warning heartbeat returned a row count of 0");
+							}
+						} catch (SQLException e) {
+							Log.error("NovaMain", "Failed to update heartbeat");
+							e.printStackTrace();
+						}
 					}
-				} catch (SQLException e) {
-					Log.error("NovaMain", "Failed to update heartbeat");
-					e.printStackTrace();
-				}
+				});
 			}
 		}, 40L, 40L);
 		heartbeatTask.start();
@@ -652,12 +658,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 				NovaCommons.getAbstractAsyncManager().runAsync(new Runnable() {
 					@Override
 					public void run() {
-						try {
-							networkManager.update(false);
-						} catch (SQLException e) {
-							Log.error("NovaMain", "Failed to update server list");
-							e.printStackTrace();
-						}
+						networkManager.updateAsync();
 					}
 				}, 1L);
 			}
