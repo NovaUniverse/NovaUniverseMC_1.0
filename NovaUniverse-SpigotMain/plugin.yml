@@ -1,6 +1,6 @@
 main: net.novauniverse.main.NovaMain
 name: NovaMain
-description: BABABOOEY
+description: Main plugin for novauniverse
 version: 1.0
 api-version: 1.13
 softdepend: [LabyModAPI, ProtocolLib, NovaCoreGameEngine]
