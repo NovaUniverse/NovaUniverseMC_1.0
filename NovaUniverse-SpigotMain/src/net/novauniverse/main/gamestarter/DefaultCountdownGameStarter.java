@@ -47,6 +47,11 @@ public class DefaultCountdownGameStarter extends GameStarter {
 						return;
 					}
 				}
+				
+				if(GameManager.getInstance().getCountdown().isCountdownRunning() && !GameManager.getInstance().getActiveGame().canStart()) {
+					GameManager.getInstance().getCountdown().cancelCountdown();
+					passedHalf = false;
+				}
 
 				int c = getGroupCount();
 
@@ -79,6 +84,7 @@ public class DefaultCountdownGameStarter extends GameStarter {
 					}
 				}
 			}
+
 		}, 5L);
 		checkTask.start();
 	}
