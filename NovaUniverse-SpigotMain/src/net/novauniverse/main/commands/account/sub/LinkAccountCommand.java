@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 
 import net.novauniverse.commons.NovaUniverseCommons;
+import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.spigot.command.AllowedSenders;
 import net.zeeraa.novacore.spigot.command.NovaSubCommand;
 
@@ -67,9 +68,9 @@ public class LinkAccountCommand extends NovaSubCommand {
 					sql = "SELECT id FROM accounts WHERE player_id = ?";
 					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
 					ps.setInt(1, playerId);
-					
+
 					rs = ps.executeQuery();
-					
+
 					if (rs.next()) {
 						existingAccountId = rs.getInt("id");
 					}
@@ -84,10 +85,10 @@ public class LinkAccountCommand extends NovaSubCommand {
 
 					int targetAccountId = -1;
 
-					sql = "SELECT id FROM accounts WHERE minecraft_link_code = ? AND player_id = null";
+					sql = "SELECT id FROM accounts WHERE minecraft_link_code = ? AND player_id IS null";
 					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
 					ps.setString(1, args[0]);
-					
+
 					rs = ps.executeQuery();
 
 					if (rs.next()) {
@@ -97,10 +98,12 @@ public class LinkAccountCommand extends NovaSubCommand {
 					rs.close();
 					ps.close();
 
-					if (targetAccountId != -1) {
+					if (targetAccountId == -1) {
 						player.sendMessage(ChatColor.GREEN + "The link code is either invalid or and account has already been linked to that novauniverse account. Visit novauniverse.net to manage your account");
 						return true;
 					}
+
+					Log.debug("LinkAccountCommand", "Link target: " + player.getName() + ". Link stage: PENDING. player id: " + playerId + ". target account id: " + targetAccountId);
 
 					sql = "UPDATE accounts SET player_id = ? WHERE id = ?";
 					ps = NovaUniverseCommons.getDbConnection().getConnection().prepareStatement(sql);
