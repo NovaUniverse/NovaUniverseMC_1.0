@@ -29,7 +29,9 @@ import net.novauniverse.main.commands.ReconnectCommand;
 import net.novauniverse.main.commands.ReloadNetworkManagerCommand;
 import net.novauniverse.main.commands.ShowServersCommand;
 import net.novauniverse.main.commands.SpectateGameCommand;
+import net.novauniverse.main.commands.WhatIsDogeWorthCommand;
 import net.novauniverse.main.commands.WhereAmICommand;
+import net.novauniverse.main.commands.account.AccountCommand;
 import net.novauniverse.main.gamespecific.DeathSwapHandler;
 import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
@@ -684,6 +686,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 		CommandRegistry.registerCommand(new ReconnectCommand());
 		CommandRegistry.registerCommand(new WhereAmICommand());
 		CommandRegistry.registerCommand(new DiscordCommand());
+		CommandRegistry.registerCommand(new AccountCommand());
+		CommandRegistry.registerCommand(new WhatIsDogeWorthCommand());
 
 		getServer().getMessenger().registerIncomingPluginChannel(this, "novauniverse:data", new NovaPluginMessageListener());
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "novauniverse:data");
