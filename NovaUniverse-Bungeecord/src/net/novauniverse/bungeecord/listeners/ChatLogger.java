@@ -1,4 +1,4 @@
-package net.novauniverse.bungeecord.chatlogger;
+package net.novauniverse.bungeecord.listeners;
 
 import java.sql.SQLException;
 
