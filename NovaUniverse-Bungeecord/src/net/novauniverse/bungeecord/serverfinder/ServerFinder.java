@@ -1,4 +1,4 @@
-package net.novauniverse.bungeecord.chatlogger.serverfinder;
+package net.novauniverse.bungeecord.serverfinder;
 
 import java.sql.SQLException;
 import java.util.UUID;
