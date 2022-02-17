@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 
 import net.labymod.serverapi.bukkit.LabyModPlugin;
 
+
 public class NovaLabymodAPI {
 	public static boolean isLabyModAPIEnabled() {
 		// Log.trace("Bukkit.getServer().getPluginManager().getPlugin(\"LabyModAPI\") !=

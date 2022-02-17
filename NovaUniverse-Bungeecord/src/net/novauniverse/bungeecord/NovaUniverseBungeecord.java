@@ -30,6 +30,7 @@ import net.novauniverse.bungeecord.commands.SpectateCommand;
 import net.novauniverse.bungeecord.domainbind.DomainBindListener;
 import net.novauniverse.bungeecord.listeners.ChatLogger;
 import net.novauniverse.bungeecord.listeners.Log4JRCEFix;
+import net.novauniverse.bungeecord.listeners.messingwithchat.MessingWithChat;
 import net.novauniverse.bungeecord.pluginmessagelistener.PluginMessageListener;
 import net.novauniverse.bungeecord.serverfinder.ServerFinder;
 import net.novauniverse.commons.NovaUniverseCommons;
@@ -191,6 +192,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		getProxy().getPluginManager().registerListener(this, this);
 		getProxy().getPluginManager().registerListener(this, domainBindListener);
 		getProxy().getPluginManager().registerListener(this, new ChatLogger());
+		getProxy().getPluginManager().registerListener(this, new MessingWithChat());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageListener());
 		getProxy().getPluginManager().registerListener(this, new Log4JRCEFix());
 

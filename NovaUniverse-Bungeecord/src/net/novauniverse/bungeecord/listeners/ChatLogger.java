@@ -11,7 +11,7 @@ import net.novauniverse.commons.network.NovaNetworkManager;
 import net.zeeraa.novacore.commons.log.Log;
 
 public class ChatLogger implements Listener {
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onChatEvent(ChatEvent e) {
 		if (e.getSender() instanceof ProxiedPlayer) {
 			ProxiedPlayer player = (ProxiedPlayer) e.getSender();

@@ -10,7 +10,7 @@ import net.md_5.bungee.event.EventPriority;
 import net.zeeraa.novacore.commons.log.Log;
 
 public class Log4JRCEFix implements Listener {
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onChatEvent(ChatEvent e) {
 		if (e.getMessage().toLowerCase().contains("${")) {
 			Log.warn("Blocked potential RCE attack. Check chat log to find out if this was a real attack");

@@ -2,6 +2,7 @@ package net.novauniverse.main.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
 import net.novauniverse.commons.network.server.NovaServer;
@@ -23,6 +24,11 @@ public class ShowServersCommand extends NovaCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+		if(NovaMain.getInstance().isSafeMode() && !(sender instanceof ConsoleCommandSender)) {
+			sender.sendMessage(ChatColor.RED + "This server is running in safe mode. All administrative commands are disabled for players");
+			return false;
+		}
+		
 		String result = ChatColor.AQUA + "" + NovaMain.getInstance().getNetworkManager().getServers().size() + ChatColor.GOLD + " servers loaded:\n";
 
 		for (NovaServer server : NovaMain.getInstance().getNetworkManager().getServers()) {

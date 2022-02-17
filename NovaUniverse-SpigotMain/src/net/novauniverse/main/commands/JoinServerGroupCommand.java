@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -29,6 +30,11 @@ public class JoinServerGroupCommand extends NovaCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+		if(NovaMain.getInstance().isSafeMode() && !(sender instanceof ConsoleCommandSender)) {
+			sender.sendMessage(ChatColor.RED + "This server is running in safe mode. All administrative commands are disabled for players");
+			return false;
+		}
+		
 		if (args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Please provide a server type");
 			return false;

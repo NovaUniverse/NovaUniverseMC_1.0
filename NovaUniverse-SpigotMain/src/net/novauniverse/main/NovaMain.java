@@ -93,6 +93,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private String serverHost;
 	private int serverId;
 
+	private boolean safeMode;
+	
 	private boolean hasLabyMod;
 
 	private List<GameStarter> gameStarters;
@@ -172,6 +174,10 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public boolean hasLabyMod() {
 		return hasLabyMod;
 	}
+	
+	public boolean isSafeMode() {
+		return safeMode;
+	}
 
 	public void enableSpectateGameCommand() {
 		if (!CommandRegistry.isRegistered(SpectateGameCommand.class)) {
@@ -197,6 +203,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		disableScoreboard = false;
 
+		safeMode = false;
+		
 		hasLabyMod = Bukkit.getServer().getPluginManager().getPlugin("LabyModAPI") != null;
 
 		/* Create config.yml */
@@ -378,7 +386,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Bukkit.getServer().shutdown();
 			return;
 		}
-
+		
 		/* Check configuration value: global_lobby_fallback */
 		if (!config.has("global_lobby_fallback")) {
 			Log.fatal("NovaMain", "Missing global_lobby_fallback in novaconfig.json. Closing server!");
@@ -409,6 +417,14 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}
 
+		/* Check configuration value: safe_mode */
+		if (config.has("safe_mode")) {
+			safeMode = config.getBoolean("safe_mode");
+			if(safeMode) {
+				Log.warn(getName(), "Safe mode enabled. System commands will be disabled");
+			}
+		}
+		
 		/* Check configuration value for: compass_tracker_strict_mode */
 		boolean strictMode = true;
 		if (config.has("compass_tracker_strict_mode")) {
