@@ -85,6 +85,11 @@ public class NovaServerType {
 		this.playerCount = playerCount;
 	}
 
+	@Override
+	public String toString() {
+		return this.getName();
+	}
+
 	/**
 	 * Compare the id of 2 server types
 	 */

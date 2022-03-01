@@ -81,6 +81,7 @@ import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboar
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
+import net.zeeraa.novacore.spigot.utils.DiscordWebhook;
 
 public class NovaMain extends NovaPlugin implements Listener {
 	private static NovaMain instance;
@@ -94,7 +95,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private int serverId;
 
 	private boolean safeMode;
-	
+
 	private boolean hasLabyMod;
 
 	private List<GameStarter> gameStarters;
@@ -108,6 +109,8 @@ public class NovaMain extends NovaPlugin implements Listener {
 	private boolean inErrorState;
 
 	private boolean disableScoreboard;
+
+	private String discordWebhookUrl;
 
 	private GameInterface gameInterface;
 
@@ -174,7 +177,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 	public boolean hasLabyMod() {
 		return hasLabyMod;
 	}
-	
+
 	public boolean isSafeMode() {
 		return safeMode;
 	}
@@ -204,7 +207,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 		disableScoreboard = false;
 
 		safeMode = false;
-		
+
 		hasLabyMod = Bukkit.getServer().getPluginManager().getPlugin("LabyModAPI") != null;
 
 		/* Create config.yml */
@@ -293,6 +296,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 		}
 
+		discordWebhookUrl = null;
+		if (config.has("discord_webhook")) {
+			discordWebhookUrl = config.getString("discord_webhook");
+		}
+
 		if (useGlobal) {
 			File globalConfigFile = new File(System.getProperty("user.home") + File.separator + "novaconfig.json");
 
@@ -303,6 +311,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 					if (global.has("novamain")) {
 						JSONObject novaMain = global.getJSONObject("novamain");
+
+						if (novaMain.has("discord_webhook")) {
+							discordWebhookUrl = novaMain.getString("discord_webhook");
+						}
+
 						if (novaMain.has("mysql")) {
 							Log.info("NovaMain", "Using MySQL connection from novaconfig.json");
 							mysql = novaMain.getJSONObject("mysql");
@@ -386,7 +399,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			Bukkit.getServer().shutdown();
 			return;
 		}
-		
+
 		/* Check configuration value: global_lobby_fallback */
 		if (!config.has("global_lobby_fallback")) {
 			Log.fatal("NovaMain", "Missing global_lobby_fallback in novaconfig.json. Closing server!");
@@ -420,11 +433,11 @@ public class NovaMain extends NovaPlugin implements Listener {
 		/* Check configuration value: safe_mode */
 		if (config.has("safe_mode")) {
 			safeMode = config.getBoolean("safe_mode");
-			if(safeMode) {
+			if (safeMode) {
 				Log.warn(getName(), "Safe mode enabled. System commands will be disabled");
 			}
 		}
-		
+
 		/* Check configuration value for: compass_tracker_strict_mode */
 		boolean strictMode = true;
 		if (config.has("compass_tracker_strict_mode")) {
@@ -610,6 +623,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 			}
 
 			if (networkManager.getServerByName(name) != null) {
+				this.sendWebhookLog("Error", "Attempted to start a server with name override while that name is already in use. Server name: " + serverName + " Server host: " + serverHost + " Server port: " + Bukkit.getServer().getPort() + " Server type: " + serverType);
 				Log.fatal("NovaMain", "Cant override name since the name is already in use. Closing server!");
 				Bukkit.getServer().shutdown();
 				return;
@@ -626,6 +640,7 @@ public class NovaMain extends NovaPlugin implements Listener {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				this.sendWebhookLog("Error", "Server name generation failed. Server name: " + serverName + " Server host: " + serverHost + " Server port: " + Bukkit.getServer().getPort() + " Server type: " + serverType);
 				Log.fatal("NovaMain", "An error occurred while generating the server name. Closing server!");
 				Bukkit.getServer().shutdown();
 				return;
@@ -638,12 +653,14 @@ public class NovaMain extends NovaPlugin implements Listener {
 			serverId = NovaNetworkManager.registerServer(serverName, serverHost, Bukkit.getServer().getPort(), serverType);
 
 			if (serverId == -1) {
+				this.sendWebhookLog("Error", "Server did not receive an id number. Server name: " + serverName + " Server host: " + serverHost + " Server port: " + Bukkit.getServer().getPort() + " Server type: " + serverType);
 				Log.fatal("NovaMain", "Server id returned -1. Closing server!");
 				Bukkit.getServer().shutdown();
 				return;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			this.sendWebhookLog("Error", "Failed to register server in database. Server name: " + serverName + " Server host: " + serverHost + " Server port: " + Bukkit.getServer().getPort() + " Server type: " + serverType);
 			Log.fatal("NovaMain", "Failed to register server in database. Closing server!");
 			Bukkit.getServer().shutdown();
 			return;
@@ -707,10 +724,36 @@ public class NovaMain extends NovaPlugin implements Listener {
 
 		getServer().getMessenger().registerIncomingPluginChannel(this, "novauniverse:data", new NovaPluginMessageListener());
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "novauniverse:data");
+
+		this.sendWebhookLog("Server started", "Server " + serverName + " started on " + serverHost + ":" + Bukkit.getServer().getPort() + ". Type: " + serverType);
+	}
+
+	public String getFullServerNameForLogs() {
+		return serverName + "@" + serverHost + ":" + Bukkit.getServer().getPort();
+	}
+
+	public boolean sendWebhookLog(String title, String message) {
+		if (discordWebhookUrl == null) {
+			return true;
+		}
+
+		DiscordWebhook webhook = new DiscordWebhook(discordWebhookUrl);
+		webhook.addEmbed(new DiscordWebhook.EmbedObject().addField(title, message, false));
+		try {
+			webhook.execute();
+			return true;
+		} catch (IOException e) {
+			Log.error(getName(), "Failed to send discord webhook message. " + e.getClass().getName() + " " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	@Override
 	public void onDisable() {
+		this.sendWebhookLog("Server shutting down", getFullServerNameForLogs() + " is shutting down");
+
 		Task.tryStopTask(heartbeatTask);
 		Task.tryStopTask(updateServersTask);
 

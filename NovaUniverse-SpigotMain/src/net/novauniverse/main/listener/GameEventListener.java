@@ -40,6 +40,8 @@ public class GameEventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameStart(GameStartEvent e) {
 		try {
+			NovaMain.getInstance().sendWebhookLog("Game started", "Started game session with " + e.getGame().getDisplayName() + " on " + NovaMain.getInstance().getFullServerNameForLogs());
+
 			NovaNetworkManager.flagAsGameStarted(NovaMain.getInstance().getServerId());
 			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 				NovaLabymodAPI.sendCurrentPlayingGamemode(player, true, e.getGame().getDisplayName());
@@ -122,15 +124,18 @@ public class GameEventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
-		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+		NovaMain.getInstance().sendWebhookLog("Game ended", "Ended game session with " + e.getGame().getDisplayName() + " on " + NovaMain.getInstance().getFullServerNameForLogs());
+		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 			if (NovaMain.getInstance().hasLabyMod()) {
 				NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
 			}
-		}
+		});
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameStartFailure(GameStartFailureEvent e) {
+		NovaMain.getInstance().sendWebhookLog("Error", "GameStartFailureEvent received on game " + e.getGame().getDisplayName() + " running on " + NovaMain.getInstance().getFullServerNameForLogs() + ". Cause: " + e.getException().getClass().getName() + " " + e.getException().getMessage());
+		
 		NovaMain.getInstance().setInErrorState(true);
 
 		try {
@@ -178,7 +183,6 @@ public class GameEventListener implements Listener {
 					if (NovaMain.getInstance().hasLabyMod()) {
 						NovaLabymodAPI.sendCineScope(player, 10, 20);
 						new BukkitRunnable() {
-
 							@Override
 							public void run() {
 								NovaLabymodAPI.sendCineScope(player, 0, 20);

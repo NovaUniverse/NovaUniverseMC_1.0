@@ -51,13 +51,15 @@ public class CheckShutdownRequest extends NovaModule {
 											public void run() {
 												task.tryStop();
 
+												NovaMain.getInstance().sendWebhookLog("Info", NovaMain.getInstance().getFullServerNameForLogs() + " received shutdown request from system");
+
 												Bukkit.getServer().broadcastMessage(ChatColor.RED + "Shutdown request received");
 
 												if (GameEndManager.getInstance().isEnabled()) {
 													GameEndManager.getInstance().setPreventShutdown(true);
 												}
 
-												if(NovaCore.isNovaGameEngineEnabled()) {
+												if (NovaCore.isNovaGameEngineEnabled()) {
 													ShutdownGameEngine.shutdownEngine();
 												}
 

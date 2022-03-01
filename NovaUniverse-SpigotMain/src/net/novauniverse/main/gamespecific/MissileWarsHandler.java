@@ -2,7 +2,6 @@ package net.novauniverse.main.gamespecific;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
@@ -49,7 +48,7 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 					}
 				}
 
-				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+				Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 					Team team = TeamManager.getTeamManager().getPlayerTeam(player);
 
 					if (team == null) {
@@ -57,7 +56,7 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 					} else {
 						NetherBoardScoreboard.getInstance().setPlayerLine(TEAM_LINE, player, team.getDisplayName() + " team");
 					}
-				}
+				});
 			}
 		}, 5L);
 	}

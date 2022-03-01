@@ -70,9 +70,7 @@ public class GameEndManager extends NovaModule implements Listener {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-						p.sendMessage(LanguageManager.getString(p.getUniqueId(), "novauniverse.game.sending_you_to_lobby_10_seconds"));
-					}
+					Bukkit.getServer().getOnlinePlayers().forEach(p -> LanguageManager.getString(p.getUniqueId(), "novauniverse.game.sending_you_to_lobby_10_seconds"));
 
 					Bukkit.getScheduler().scheduleSyncDelayedTask(NovaMain.getInstance(), new Runnable() {
 						@Override
@@ -94,9 +92,9 @@ public class GameEndManager extends NovaModule implements Listener {
 
 		if (sendAttempts > GameEndManager.ATTEMPTS_BEFORE_FAIL) {
 			Log.warn("GameEndManager", "Failed to send players to the lobby within " + GameEndManager.ATTEMPTS_BEFORE_FAIL + " attempts. Closing server");
-			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-				p.kickPlayer(LanguageManager.getString(p.getUniqueId(), "novauniverse.game.server.restarting", NovaMain.getInstance().getServerType().getDisplayName()));
-			}
+
+			Bukkit.getServer().getOnlinePlayers().forEach(p -> p.kickPlayer(LanguageManager.getString(p.getUniqueId(), "novauniverse.game.server.restarting", NovaMain.getInstance().getServerType().getDisplayName())));
+
 			Bukkit.getServer().shutdown();
 			return;
 		}
