@@ -1,5 +1,6 @@
 package net.novauniverse.bungeecord;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -30,6 +31,7 @@ import net.novauniverse.bungeecord.commands.SpectateCommand;
 import net.novauniverse.bungeecord.domainbind.DomainBindListener;
 import net.novauniverse.bungeecord.listeners.ChatLogger;
 import net.novauniverse.bungeecord.listeners.Log4JRCEFix;
+import net.novauniverse.bungeecord.listeners.WebhookLogListener;
 import net.novauniverse.bungeecord.listeners.messingwithchat.MessingWithChat;
 import net.novauniverse.bungeecord.pluginmessagelistener.PluginMessageListener;
 import net.novauniverse.bungeecord.serverfinder.ServerFinder;
@@ -43,6 +45,7 @@ import net.zeeraa.novacore.commons.database.DBConnection;
 import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.commons.utils.DiscordWebhook;
 
 public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 	private static NovaUniverseBungeecord instance;
@@ -62,6 +65,8 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 	private String defaultServerName;
 
 	private Map<String, NovaServerType> domainBinds;
+
+	private String discordWebhookUrl;
 
 	public static NovaUniverseBungeecord getInstance() {
 		return instance;
@@ -120,6 +125,11 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 			e1.printStackTrace();
 			Log.fatal("Failed to fetch servers from database");
 			return;
+		}
+
+		discordWebhookUrl = null;
+		if (config.contains("discord_webhook")) {
+			discordWebhookUrl = config.getString("discord_webhook");
 		}
 
 		defaultServerName = config.getString("default_server_name");
@@ -195,6 +205,7 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		getProxy().getPluginManager().registerListener(this, new MessingWithChat());
 		getProxy().getPluginManager().registerListener(this, new PluginMessageListener());
 		getProxy().getPluginManager().registerListener(this, new Log4JRCEFix());
+		getProxy().getPluginManager().registerListener(this, new WebhookLogListener());
 
 		getProxy().registerChannel("novauniverse:data");
 
@@ -202,6 +213,8 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new JoinCommand());
 
 		updateDomainBinds();
+		
+		sendWebhookLog("Proxy", "Proxy starting");
 	}
 
 	@Override
@@ -225,6 +238,26 @@ public class NovaUniverseBungeecord extends NovaPlugin implements Listener {
 		getProxy().getScheduler().cancel(this);
 		getProxy().getPluginManager().unregisterListeners((Plugin) this);
 		getProxy().getPluginManager().unregisterCommands((Plugin) this);
+		
+		sendWebhookLog("Proxy", "Proxy shutting down");
+	}
+
+	public boolean sendWebhookLog(String title, String message) {
+		if (discordWebhookUrl == null) {
+			return true;
+		}
+
+		DiscordWebhook webhook = new DiscordWebhook(discordWebhookUrl);
+		webhook.addEmbed(new DiscordWebhook.EmbedObject().addField(title, message, false));
+		try {
+			webhook.execute();
+			return true;
+		} catch (IOException e) {
+			Log.error("NovaUniverseBungeecord", "Failed to send discord webhook message. " + e.getClass().getName() + " " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	private void updateDomainBinds() {

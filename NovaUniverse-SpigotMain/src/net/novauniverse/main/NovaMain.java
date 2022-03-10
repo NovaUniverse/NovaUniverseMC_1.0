@@ -68,6 +68,7 @@ import net.zeeraa.novacore.commons.database.DBConnection;
 import net.zeeraa.novacore.commons.database.DBCredentials;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.commons.utils.DiscordWebhook;
 import net.zeeraa.novacore.commons.utils.JSONFileType;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
@@ -81,7 +82,6 @@ import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboar
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
-import net.zeeraa.novacore.spigot.utils.DiscordWebhook;
 
 public class NovaMain extends NovaPlugin implements Listener {
 	private static NovaMain instance;
