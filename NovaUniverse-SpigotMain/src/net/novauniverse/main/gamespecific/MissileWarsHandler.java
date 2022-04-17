@@ -6,9 +6,9 @@ import org.bukkit.event.Listener;
 
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.triggers.RepeatingGameTrigger;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.triggers.RepeatingGameTrigger;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.Team;
@@ -21,9 +21,8 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 	public static final int LOOT_COUNTDOWN_LINE = 2;
 	private boolean lootCountdownShown;
 
-	@Override
-	public String getName() {
-		return "MissileWarsHandler";
+	public MissileWarsHandler() {
+		super("NovaUniverse.MissileWarsHandler");
 	}
 
 	@Override
@@ -64,11 +63,13 @@ public class MissileWarsHandler extends NovaModule implements Listener {
 	@Override
 	public void onEnable() throws Exception {
 		updateTask.start();
-		
+
 		GameStartScoreboardCountdown.getInstance().setCountdownLine(2);
 
-		//NetherBoardScoreboard.getInstance().setGlobalLine(12, ChatColor.GRAY + "Missile Wars made by");
-		//NetherBoardScoreboard.getInstance().setGlobalLine(13, ChatColor.GRAY + "SethBling & Cubehamster");
+		// NetherBoardScoreboard.getInstance().setGlobalLine(12, ChatColor.GRAY +
+		// "Missile Wars made by");
+		// NetherBoardScoreboard.getInstance().setGlobalLine(13, ChatColor.GRAY +
+		// "SethBling & Cubehamster");
 	}
 
 	@Override

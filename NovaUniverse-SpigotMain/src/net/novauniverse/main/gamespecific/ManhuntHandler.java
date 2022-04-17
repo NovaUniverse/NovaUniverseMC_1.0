@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 
 import net.novauniverse.games.manhunt.v1.game.team.ManhuntTeam;
 import net.zeeraa.novacore.commons.tasks.Task;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 import net.zeeraa.novacore.spigot.teams.TeamManager;
@@ -18,9 +18,8 @@ public class ManhuntHandler extends NovaModule implements Listener {
 
 	public static final int TEAM_LINE = 1;
 
-	@Override
-	public String getName() {
-		return "ManhuntHandler";
+	public ManhuntHandler() {
+		super("NovaUniverse.ManhuntHandler");
 	}
 
 	@Override

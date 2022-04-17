@@ -20,11 +20,10 @@ public class ServerMenuPlayerCountUpdater extends NovaModule {
 	private Task updateTask;
 	private Task networlkUpdateTask;
 
-	@Override
-	public String getName() {
-		return "ServerMenuPlayerCountUpdater";
+	public ServerMenuPlayerCountUpdater() {
+		super("NovaUniverse.ServerMenuPlayerCountUpdater");
 	}
-
+	
 	@Override
 	public void onLoad() {
 		updateTask = new SimpleTask(NovaUniverseLobby.getInstance(), new Runnable() {

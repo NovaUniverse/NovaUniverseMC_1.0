@@ -15,6 +15,10 @@ import net.zeeraa.novacore.spigot.module.NovaModule;
 import net.zeeraa.novacore.spigot.utils.ItemBuilder;
 
 public class EdibleHeads extends NovaModule implements Listener {
+	public EdibleHeads() {
+		super("NovaUniverse.NovaUniverseEdibleHeads");
+	}
+
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -37,10 +41,5 @@ public class EdibleHeads extends NovaModule implements Listener {
 				}
 			}
 		}
-	}
-
-	@Override
-	public String getName() {
-		return "NovaUniverseEdibleHeads";
 	}
 }

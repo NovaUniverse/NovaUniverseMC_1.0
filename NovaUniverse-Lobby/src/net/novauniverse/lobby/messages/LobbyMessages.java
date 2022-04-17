@@ -26,9 +26,8 @@ public class LobbyMessages extends NovaModule implements Listener {
 	private static LobbyMessages instance;
 	private SimpleTask task;
 
-	@Override
-	public String getName() {
-		return "LobbyMessages";
+	public LobbyMessages() {
+		super("NovaUniverse.LobbyMessages");
 	}
 
 	public static LobbyMessages getInstance() {

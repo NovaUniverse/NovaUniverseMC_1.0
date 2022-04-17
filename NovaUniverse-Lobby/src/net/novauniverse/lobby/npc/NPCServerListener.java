@@ -30,9 +30,8 @@ public class NPCServerListener extends NovaModule implements Listener {
 		return instance;
 	}
 
-	@Override
-	public String getName() {
-		return "NPCServerListener";
+	public NPCServerListener() {
+		super("NovaUniverse.NPCServerListener");
 	}
 
 	public Map<Integer, String> getNpcServerGroupMap() {

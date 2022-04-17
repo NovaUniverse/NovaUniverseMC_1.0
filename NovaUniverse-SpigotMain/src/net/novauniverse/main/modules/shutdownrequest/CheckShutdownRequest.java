@@ -20,9 +20,8 @@ import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 public class CheckShutdownRequest extends NovaModule {
 	private Task task;
 
-	@Override
-	public String getName() {
-		return "CheckShutdownRequest";
+	public CheckShutdownRequest() {
+		super("NovaUniverse.CheckShutdownRequest");
 	}
 
 	@Override

@@ -5,9 +5,9 @@ import org.bukkit.event.Listener;
 
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.TextUtils;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.triggers.DelayedGameTrigger;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.triggers.DelayedGameTrigger;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 
@@ -19,9 +19,8 @@ public class UHCHandler extends NovaModule implements Listener {
 	//public static final int PLAYERS_LEFT_LINE = 1;
 	public static final int BORDER_COUNTDOWN_LINE = 2;
 
-	@Override
-	public String getName() {
-		return "UHCHandler";
+	public UHCHandler() {
+		super("NovaUniverse.UHCHandler");
 	}
 
 	@Override

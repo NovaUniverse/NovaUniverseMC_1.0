@@ -73,11 +73,11 @@ import net.zeeraa.novacore.commons.utils.JSONFileType;
 import net.zeeraa.novacore.commons.utils.JSONFileUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
 import net.zeeraa.novacore.spigot.command.CommandRegistry;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.gamelobby.GameLobby;
 import net.zeeraa.novacore.spigot.language.LanguageReader;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTracker;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.novaplugin.NovaPlugin;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
@@ -539,29 +539,29 @@ public class NovaMain extends NovaPlugin implements Listener {
 		}
 
 		/* Load modules */
-		ModuleManager.loadModule(NoEnderPearlDamage.class, noPearlDamage);
-		ModuleManager.loadModule(TabList.class, true);
-		ModuleManager.loadModule(NovaSetReconnectServer.class);
-		ModuleManager.loadModule(CheckShutdownRequest.class, true);
-		ModuleManager.loadModule(NovaScoreboard.class, true);
-		ModuleManager.loadModule(PreventingAleksaFromBreakingTheServer.class, true);
-		ModuleManager.loadModule(PlayerHeadDrop.class, false);
-		ModuleManager.loadModule(GoldenHead.class, false);
-		ModuleManager.loadModule(EdibleHeads.class, false);
+		ModuleManager.loadModule(this, NoEnderPearlDamage.class, noPearlDamage);
+		ModuleManager.loadModule(this, TabList.class, true);
+		ModuleManager.loadModule(this, NovaSetReconnectServer.class);
+		ModuleManager.loadModule(this, CheckShutdownRequest.class, true);
+		ModuleManager.loadModule(this, NovaScoreboard.class, true);
+		ModuleManager.loadModule(this, PreventingAleksaFromBreakingTheServer.class, true);
+		ModuleManager.loadModule(this, PlayerHeadDrop.class, false);
+		ModuleManager.loadModule(this, GoldenHead.class, false);
+		ModuleManager.loadModule(this, EdibleHeads.class, false);
 
 		if (NovaCore.isNovaGameEngineEnabled()) {
-			ModuleManager.loadModule(GameEndManager.class, true);
-			ModuleManager.loadModule(WinMessage.class, true);
-			ModuleManager.loadModule(GameStartScoreboardCountdown.class);
+			ModuleManager.loadModule(this, GameEndManager.class, true);
+			ModuleManager.loadModule(this, WinMessage.class, true);
+			ModuleManager.loadModule(this, GameStartScoreboardCountdown.class);
 
-			ModuleManager.loadModule(NovaGameTimeLimit.class, true);
+			ModuleManager.loadModule(this, NovaGameTimeLimit.class, true);
 
 			/* Game specific */
-			ModuleManager.loadModule(MissileWarsHandler.class);
-			ModuleManager.loadModule(UHCHandler.class);
-			ModuleManager.loadModule(UHCv2Handler.class);
-			ModuleManager.loadModule(DeathSwapHandler.class);
-			ModuleManager.loadModule(ManhuntHandler.class);
+			ModuleManager.loadModule(this, MissileWarsHandler.class);
+			ModuleManager.loadModule(this, UHCHandler.class);
+			ModuleManager.loadModule(this, UHCv2Handler.class);
+			ModuleManager.loadModule(this, DeathSwapHandler.class);
+			ModuleManager.loadModule(this, ManhuntHandler.class);
 
 			/* Listeners */
 			Bukkit.getServer().getPluginManager().registerEvents(new GameEventListener(), this);

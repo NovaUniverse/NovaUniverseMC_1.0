@@ -10,9 +10,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 
 public class NoEnderPearlDamage extends NovaModule implements Listener {
-	@Override
-	public String getName() {
-		return "NoEnderPearlDamage";
+	public NoEnderPearlDamage() {
+		super("NovaUniverse.NoEnderPearlDamage");
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

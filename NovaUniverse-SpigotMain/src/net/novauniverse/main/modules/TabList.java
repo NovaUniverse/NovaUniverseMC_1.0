@@ -18,9 +18,8 @@ public class TabList extends NovaModule {
 	private int colorAnimationIndex = 0;
 	private ChatColor[] colorAnimation = { ChatColor.AQUA, ChatColor.LIGHT_PURPLE, ChatColor.RED, ChatColor.GOLD, ChatColor.YELLOW, ChatColor.GREEN };
 
-	@Override
-	public String getName() {
-		return "TabList";
+	public TabList() {
+		super("NovaUniverse.TabList");
 	}
 
 	@Override

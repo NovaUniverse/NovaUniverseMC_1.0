@@ -24,9 +24,8 @@ public class NovaScoreboard extends NovaModule {
 
 	private int playersLeftLine = -1;
 
-	@Override
-	public String getName() {
-		return "NovaScoreboard";
+	public NovaScoreboard() {
+		super("NovaUniverse.NovaScoreboard");
 	}
 
 	public void setPlayersLeftLine(int playersLeftLine) {

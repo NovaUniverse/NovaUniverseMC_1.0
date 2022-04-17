@@ -2,7 +2,7 @@ package net.novauniverse.main.gamestarter;
 
 import org.bukkit.event.Listener;
 
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameLoadedEvent;
 
 public abstract class GameStarter implements Listener {
 	/**

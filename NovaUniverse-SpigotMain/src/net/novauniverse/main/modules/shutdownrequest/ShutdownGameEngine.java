@@ -1,7 +1,7 @@
 package net.novauniverse.main.modules.shutdownrequest;
 
-import net.zeeraa.novacore.spigot.module.modules.game.GameEndReason;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameEndReason;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
 
 public class ShutdownGameEngine {
 	public static void shutdownEngine() {

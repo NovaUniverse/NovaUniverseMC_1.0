@@ -26,14 +26,14 @@ import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
 import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameLoadedEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameStartEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameStartFailureEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.PlayerEliminatedEvent;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.module.ModuleManager;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameLoadedEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartFailureEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerEliminatedEvent;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 
 public class GameEventListener implements Listener {

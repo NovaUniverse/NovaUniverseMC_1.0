@@ -16,9 +16,8 @@ public class DeathSwapHandler extends NovaModule {
 	private boolean worldGenerationShown;
 	private Task task;
 
-	@Override
-	public String getName() {
-		return "DeathSwapHandler";
+	public DeathSwapHandler() {
+		super("NovaUniverse.DeathSwapHandler");
 	}
 
 	@Override

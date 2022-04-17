@@ -27,9 +27,8 @@ public class GoldenHead extends NovaModule implements Listener {
 		return instance;
 	}
 	
-	@Override
-	public String getName() {
-		return "NovaGoldenHead";
+	public GoldenHead() {
+		super("NovaUniverse.GoldenHead");
 	}
 
 	@Override

@@ -12,9 +12,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 
 public class NovaUniverseSpawnProtection extends NovaModule implements Listener {
-	@Override
-	public String getName() {
-		return "NovaUniverseSpawnProtection";
+	public NovaUniverseSpawnProtection() {
+		super("NovaUniverse.NovaUniverseSpawnProtection");
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

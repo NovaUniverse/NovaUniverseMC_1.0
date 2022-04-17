@@ -27,9 +27,8 @@ public class LobbyFireworks extends NovaModule {
 
 	private VectorArea area;
 
-	@Override
-	public String getName() {
-		return "LobbyFireworks";
+	public LobbyFireworks() {
+		super("NovaUniverse.LobbyFireworks");
 	}
 
 	@Override

@@ -18,8 +18,7 @@ public class PreventingAleksaFromBreakingTheServer extends NovaModule implements
 		}
 	}
 
-	@Override
-	public String getName() {
-		return "PreventingAleksaFromBreakingTheServer";
+	public PreventingAleksaFromBreakingTheServer() {
+		super("NovaUniverse.PreventingAleksaFromBreakingTheServer");
 	}
 }

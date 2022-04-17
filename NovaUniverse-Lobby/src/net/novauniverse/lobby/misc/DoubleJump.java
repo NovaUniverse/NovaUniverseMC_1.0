@@ -28,9 +28,8 @@ public class DoubleJump extends NovaModule implements Listener {
 		return instance;
 	}
 	
-	@Override
-	public String getName() {
-		return "DoubleJump";
+	public DoubleJump() {
+		super("NovaUniverse.DoubleJump");
 	}
 
 	private List<UUID> disabledPlayers;

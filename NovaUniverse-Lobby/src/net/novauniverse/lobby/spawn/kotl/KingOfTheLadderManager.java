@@ -34,9 +34,8 @@ public class KingOfTheLadderManager extends NovaModule implements Listener {
 
 	private SimpleTask task;
 
-	@Override
-	public String getName() {
-		return "KingOfTheLadderManager";
+	public KingOfTheLadderManager() {
+		super("NovaUniverse.KingOfTheLadderManager");
 	}
 
 	public static KingOfTheLadderManager getInstance() {

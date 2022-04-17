@@ -9,9 +9,9 @@ import org.bukkit.event.Listener;
 
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.commons.log.Log;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
 
 public class GameEndManager extends NovaModule implements Listener {
 	public static final int ATTEMPTS_BEFORE_FALLBACK_LOBBY = 5;
@@ -35,9 +35,8 @@ public class GameEndManager extends NovaModule implements Listener {
 		return preventShutdown;
 	}
 
-	@Override
-	public String getName() {
-		return "GameEndManager";
+	public GameEndManager() {
+		super("NovaUniverse.GameEndManager");
 	}
 
 	@Override

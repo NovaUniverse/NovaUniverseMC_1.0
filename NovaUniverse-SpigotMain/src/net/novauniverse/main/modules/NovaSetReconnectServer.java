@@ -14,11 +14,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import net.novauniverse.commons.NovaUniverseCommons;
 import net.novauniverse.main.NovaMain;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameStartEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.PlayerEliminatedEvent;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerEliminatedEvent;
 
 public class NovaSetReconnectServer extends NovaModule implements Listener {
 	private static NovaSetReconnectServer instance;
@@ -32,9 +32,8 @@ public class NovaSetReconnectServer extends NovaModule implements Listener {
 		NovaSetReconnectServer.instance = this;
 	}
 	
-	@Override
-	public String getName() {
-		return "NovaSetReconnectServer";
+	public NovaSetReconnectServer() {
+		super("NovaUniverse.NovaSetReconnectServer");
 	}
 
 	@Override

@@ -1,21 +1,20 @@
 package net.novauniverse.main.modules;
 
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import net.md_5.bungee.api.ChatColor;
 import net.zeeraa.novacore.spigot.NovaCore;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.PlayerWinEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.TeamWinEvent;
 import net.zeeraa.novacore.spigot.language.LanguageManager;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.events.PlayerWinEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.TeamWinEvent;
 import net.zeeraa.novacore.spigot.teams.Team;
 
 public class WinMessage extends NovaModule implements Listener {
-	@Override
-	public String getName() {
-		return "WinMessage";
+	public WinMessage() {
+		super("NovaUniverse.WinMessage");
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

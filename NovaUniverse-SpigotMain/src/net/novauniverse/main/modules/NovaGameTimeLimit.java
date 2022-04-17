@@ -11,11 +11,11 @@ import org.bukkit.event.Listener;
 import net.zeeraa.novacore.commons.timers.TickCallback;
 import net.zeeraa.novacore.commons.utils.Callback;
 import net.zeeraa.novacore.commons.utils.TextUtils;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameEndReason;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameEndReason;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameEndEvent;
-import net.zeeraa.novacore.spigot.module.modules.game.events.GameStartEvent;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.timers.BasicTimer;
 
@@ -27,9 +27,8 @@ public class NovaGameTimeLimit extends NovaModule implements Listener {
 
 	private boolean showTimer;
 
-	@Override
-	public String getName() {
-		return "NovaGameTimeLimit";
+	public NovaGameTimeLimit() {
+		super("NovaUniverse.NovaGameTimeLimit");
 	}
 
 	public static NovaGameTimeLimit getInstance() {

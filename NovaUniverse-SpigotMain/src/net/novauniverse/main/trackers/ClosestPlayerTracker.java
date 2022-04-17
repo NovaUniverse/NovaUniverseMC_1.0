@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTarget;
 import net.zeeraa.novacore.spigot.module.modules.compass.CompassTrackerTarget;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
 
 public class ClosestPlayerTracker implements CompassTrackerTarget {
 	@Override

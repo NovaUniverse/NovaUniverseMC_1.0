@@ -66,8 +66,7 @@ public class PlayerHeadDrop extends NovaModule implements Listener {
 		p.getWorld().dropItem(p.getLocation(), playerHead);
 	}
 
-	@Override
-	public String getName() {
-		return "NovaUniversePlayerHeadDrop";
+	public PlayerHeadDrop() {
+		super("NovaUniverse.PlayerHeadDrop");
 	}
 }

@@ -8,8 +8,8 @@ import org.bukkit.permissions.PermissionDefault;
 import net.novauniverse.main.NovaMain;
 import net.zeeraa.novacore.spigot.command.AllowedSenders;
 import net.zeeraa.novacore.spigot.command.NovaCommand;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.gamelobby.GameLobby;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.gamelobby.GameLobby;
 
 public class SpectateGameCommand extends NovaCommand {
 	public SpectateGameCommand() {

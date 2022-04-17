@@ -24,9 +24,8 @@ public class GameStartScoreboardCountdown extends NovaModule {
 
 	private Task task;
 
-	@Override
-	public String getName() {
-		return "GameStartScoreboardCountdown";
+	public GameStartScoreboardCountdown() {
+		super("NovaUniverse.GameStartScoreboardCountdown");
 	}
 
 	@Override

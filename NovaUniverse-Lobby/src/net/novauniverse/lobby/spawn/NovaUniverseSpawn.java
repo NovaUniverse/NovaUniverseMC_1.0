@@ -20,9 +20,8 @@ import net.zeeraa.novacore.spigot.utils.PlayerUtils;
 public class NovaUniverseSpawn extends NovaModule implements Listener {
 	private SimpleTask task;
 
-	@Override
-	public String getName() {
-		return "NovaUniverseSpawn";
+	public NovaUniverseSpawn() {
+		super("NovaUniverse.NovaUniverseSpawn");
 	}
 
 	@Override

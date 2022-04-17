@@ -7,9 +7,9 @@ import net.novauniverse.main.modules.NovaGameTimeLimit;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.TextUtils;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
+import net.zeeraa.novacore.spigot.gameengine.module.modules.game.triggers.DelayedGameTrigger;
 import net.zeeraa.novacore.spigot.module.NovaModule;
-import net.zeeraa.novacore.spigot.module.modules.game.GameManager;
-import net.zeeraa.novacore.spigot.module.modules.game.triggers.DelayedGameTrigger;
 import net.zeeraa.novacore.spigot.module.modules.scoreboard.NetherBoardScoreboard;
 import net.zeeraa.novacore.spigot.tasks.SimpleTask;
 
@@ -19,10 +19,9 @@ public class UHCv2Handler extends NovaModule implements Listener {
 	public static final int COUNTDOWN_LINE = 2;
 	public static final int FINAL_HEAL_LINE = 3;
 
-	@Override
-	public String getName() {
-		return "UHCv2Handler";
-	}
+public UHCv2Handler() {
+	super("NovaUniverse.UHCv2Handler");
+}
 
 	private boolean cleanCountdownLine;
 
