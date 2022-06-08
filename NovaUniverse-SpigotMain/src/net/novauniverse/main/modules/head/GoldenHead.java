@@ -15,7 +15,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import io.github.bananapuncher714.nbteditor.NBTEditor;
-import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
 import net.zeeraa.novacore.spigot.customcrafting.CustomCraftingManager;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 import net.zeeraa.novacore.spigot.utils.ItemBuilder;
@@ -69,11 +69,11 @@ public class GoldenHead extends NovaModule implements Listener {
 				if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					e.setCancelled(true);
 					Player p = e.getPlayer();
-					if (VersionIndependantUtils.get().getItemInMainHand(p).getAmount() > 1) {
-						VersionIndependantUtils.get().getItemInMainHand(p).setAmount(e.getItem().getAmount() - 1);
+					if (VersionIndependentUtils.get().getItemInMainHand(p).getAmount() > 1) {
+						VersionIndependentUtils.get().getItemInMainHand(p).setAmount(e.getItem().getAmount() - 1);
 					} else {
-						if (VersionIndependantUtils.get().getItemInMainHand(p).getAmount() == 1) {
-							VersionIndependantUtils.get().setItemInMainHand(p, ItemBuilder.AIR);
+						if (VersionIndependentUtils.get().getItemInMainHand(p).getAmount() == 1) {
+							VersionIndependentUtils.get().setItemInMainHand(p, ItemBuilder.AIR);
 						} else {
 							boolean removed = false;
 							for (int i = 0; i < p.getInventory().getSize(); i++) {

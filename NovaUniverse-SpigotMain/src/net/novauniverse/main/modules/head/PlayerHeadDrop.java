@@ -9,7 +9,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
 import net.zeeraa.novacore.spigot.module.NovaModule;
 import net.zeeraa.novacore.spigot.utils.ItemBuilder;
 
@@ -17,7 +17,7 @@ public class PlayerHeadDrop extends NovaModule implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
-		ItemStack playerHead = VersionIndependantUtils.get().getVersionIndependantItems().getPlayerSkull();
+		ItemStack playerHead = VersionIndependentUtils.get().getVersionIndependantItems().getPlayerSkull();
 
 		SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
 

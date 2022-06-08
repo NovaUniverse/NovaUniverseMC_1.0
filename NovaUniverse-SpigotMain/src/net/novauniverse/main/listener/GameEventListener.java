@@ -24,8 +24,8 @@ import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.NovaScoreboard;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.zeeraa.novacore.commons.log.Log;
-import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
-import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
+import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependentSound;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameLoadedEvent;
@@ -177,7 +177,7 @@ public class GameEventListener implements Listener {
 					}
 
 					// player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
-					VersionIndependantUtils.get().playSound(player, player.getLocation(), VersionIndependantSound.WITHER_HURT, 1F, 1F);
+					VersionIndependentUtils.get().playSound(player, player.getLocation(), VersionIndependentSound.WITHER_HURT, 1F, 1F);
 					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
 
 					if (NovaMain.getInstance().hasLabyMod()) {

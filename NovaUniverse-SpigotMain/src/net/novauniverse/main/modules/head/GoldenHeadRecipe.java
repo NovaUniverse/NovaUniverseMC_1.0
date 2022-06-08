@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
 import net.zeeraa.novacore.spigot.customcrafting.CustomRecipe;
 
 public class GoldenHeadRecipe extends CustomRecipe {
@@ -16,7 +16,7 @@ public class GoldenHeadRecipe extends CustomRecipe {
 		recipe.shape("AAA", "ABA", "AAA");
 
 		recipe.setIngredient('A', Material.GOLD_INGOT);
-		VersionIndependantUtils.get().setShapedRecipeIngredientAsPlayerSkull(recipe, 'B');
+		VersionIndependentUtils.get().setShapedRecipeIngredientAsPlayerSkull(recipe, 'B');
 
 		return recipe;
 	}
