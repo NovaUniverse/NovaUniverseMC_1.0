@@ -28,7 +28,7 @@ public class ReconnectCommand extends NovaCommand {
 		setPermissionDefaultValue(PermissionDefault.TRUE);
 		setDescription("Reconnect to the last game");
 		setEmptyTabMode(true);
-		setUseage("/reconnect");
+		setUsage("/reconnect");
 	}
 
 	@Override

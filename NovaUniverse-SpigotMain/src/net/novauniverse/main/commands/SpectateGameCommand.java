@@ -16,7 +16,7 @@ public class SpectateGameCommand extends NovaCommand {
 		super("spectategame", NovaMain.getInstance());
 
 		setDescription("Join the game as a spectator instead of a player");
-		setUseage("/spectategame");
+		setUsage("/spectategame");
 		setPermission("novauniverse.command.spectategame");
 		setPermissionDefaultValue(PermissionDefault.TRUE);
 		setAllowedSenders(AllowedSenders.PLAYERS);
