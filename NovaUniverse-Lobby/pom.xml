@@ -88,8 +88,8 @@
 
 	<repositories>
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<id>novauniverse2</id>
+			<url>https://nexus2.novauniverse.net/repository/novauniverse-group/</url>
 		</repository>
 
 		<repository>
@@ -97,10 +97,6 @@
 			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
 
-		<repository>
-			<id>novauniverse-group</id>
-			<url>https://nexus.novauniverse.net/repository/novauniverse-group/</url>
-		</repository>
 		<repository>
 			<id>enginehub-maven</id>
 			<url>http://maven.enginehub.org/repo/</url>
@@ -111,9 +107,6 @@
 			<url>http://repo.citizensnpcs.co/</url>
 		</repository>
 	</repositories>
-
-
-
 
 	<dependencies>
 		<!--Spigot API -->
@@ -183,7 +176,5 @@
 			<version>6.1.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-
-
 	</dependencies>
 </project>

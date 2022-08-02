@@ -81,8 +81,8 @@
 		</repository>
 
 		<repository>
-			<id>novauniverse-group</id>
-			<url>https://nexus.novauniverse.net/repository/novauniverse-group/</url>
+			<id>novauniverse2</id>
+			<url>https://nexus2.novauniverse.net/repository/novauniverse-group/</url>
 		</repository>
 	</repositories>
 
@@ -92,14 +92,6 @@
 				<groupId>net.novauniverse.novacore</groupId>
 				<artifactId>novacore-commons</artifactId>
 				<version>2.0.0-SNAPSHOT</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>me.kaimu.hastebin</groupId>
-				<artifactId>hastebin.java</artifactId>
-				<version>1.0.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

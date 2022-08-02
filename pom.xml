@@ -26,12 +26,12 @@
 	
 	<distributionManagement>
 		<snapshotRepository>
-			<id>novauniverse</id>
-			<url>https://nexus.novauniverse.net/repository/novauniverse/</url>
+			<id>novauniverse2</id>
+			<url>https://nexus2.novauniverse.net/repository/novauniverse/</url>
 		</snapshotRepository>
 		<repository>
-			<id>novauniverse</id>
-			<url>https://nexus.novauniverse.net/repository/novauniverse/</url>
+			<id>novauniverse2</id>
+			<url>https://nexus2.novauniverse.net/repository/novauniverse/</url>
 		</repository>
 	</distributionManagement>
 	
