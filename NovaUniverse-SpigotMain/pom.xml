@@ -188,20 +188,6 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<artifactId>bukkit</artifactId>
-			<groupId>net.labymod.serverapi</groupId>
-			<version>1.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<artifactId>common</artifactId>
-			<groupId>net.labymod.serverapi</groupId>
-			<version>1.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
 		
 		<dependency>
 			<groupId>net.novauniverse</groupId>

@@ -9,11 +9,8 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +36,6 @@ import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamespecific.UHCv2Handler;
 import net.novauniverse.main.gamestarter.DefaultCountdownGameStarter;
 import net.novauniverse.main.gamestarter.GameStarter;
-import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.listener.GameEventListener;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.GameStartScoreboardCountdown;
@@ -798,14 +794,4 @@ public class NovaMain extends NovaPlugin implements Listener {
 			NovaUniverseCommons.getServerFinder().joinServerType(player.getUniqueId(), fallbackLobbyServerType);
 		}
 	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		// NovaLabymodAPI.sendWatermark(e.getPlayer(), true);
-
-		if (hasLabyMod) {
-			NovaLabymodAPI.updateGameInfo(e.getPlayer(), true, getServerType().getDisplayName(), 0, 0);
-		}
-	}
-
 }

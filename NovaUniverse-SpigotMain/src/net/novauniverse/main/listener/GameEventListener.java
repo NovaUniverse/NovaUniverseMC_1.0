@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.connorlinfoot.titleapi.TitleAPI;
@@ -19,14 +17,12 @@ import net.novauniverse.main.gamespecific.ManhuntHandler;
 import net.novauniverse.main.gamespecific.MissileWarsHandler;
 import net.novauniverse.main.gamespecific.UHCHandler;
 import net.novauniverse.main.gamespecific.UHCv2Handler;
-import net.novauniverse.main.labymod.NovaLabymodAPI;
 import net.novauniverse.main.modules.GameEndManager;
 import net.novauniverse.main.modules.NovaScoreboard;
 import net.novauniverse.main.modules.NovaSetReconnectServer;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
 import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependentSound;
-import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameManager;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameEndEvent;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameLoadedEvent;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.events.GameStartEvent;
@@ -43,9 +39,6 @@ public class GameEventListener implements Listener {
 			NovaMain.getInstance().sendWebhookLog("Game started", "Started game session with " + e.getGame().getDisplayName() + " on " + NovaMain.getInstance().getFullServerNameForLogs());
 
 			NovaNetworkManager.flagAsGameStarted(NovaMain.getInstance().getServerId());
-			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(player, true, e.getGame().getDisplayName());
-			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Log.error("NovaMain", "Failed flag this server as minigame_started");
@@ -112,24 +105,8 @@ public class GameEventListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		if (GameManager.getInstance().isEnabled()) {
-			if (GameManager.getInstance().hasGame()) {
-				if (NovaMain.getInstance().hasLabyMod()) {
-					NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), true, GameManager.getInstance().getActiveGame().getDisplayName());
-				}
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
 	public void onGameEnd(GameEndEvent e) {
 		NovaMain.getInstance().sendWebhookLog("Game ended", "Ended game session with " + e.getGame().getDisplayName() + " on " + NovaMain.getInstance().getFullServerNameForLogs());
-		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
-			if (NovaMain.getInstance().hasLabyMod()) {
-				NovaLabymodAPI.sendCurrentPlayingGamemode(player, false, e.getGame().getDisplayName());
-			}
-		});
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -165,7 +142,7 @@ public class GameEventListener implements Listener {
 	@EventHandler
 	public void onPlayerEliminated(PlayerEliminatedEvent e) {
 		if (e.getPlayer().isOnline()) {
-			Player player = e.getPlayer().getPlayer();
+			final Player player = e.getPlayer().getPlayer();
 
 			new BukkitRunnable() {
 				@Override
@@ -176,33 +153,10 @@ public class GameEventListener implements Listener {
 						sub = ChatColor.RED + "Killed by " + ChatColor.AQUA + e.getKiller().getName();
 					}
 
-					// player.playSound(player.getLocation(), Sound.WITHER_HURT, 1F, 1);
 					VersionIndependentUtils.get().playSound(player, player.getLocation(), VersionIndependentSound.WITHER_HURT, 1F, 1F);
 					TitleAPI.sendTitle(player, 5, 60, 10, ChatColor.RED + "Eliminated", sub);
-
-					if (NovaMain.getInstance().hasLabyMod()) {
-						NovaLabymodAPI.sendCineScope(player, 10, 20);
-						new BukkitRunnable() {
-							@Override
-							public void run() {
-								NovaLabymodAPI.sendCineScope(player, 0, 20);
-							}
-						}.runTaskLater(NovaMain.getInstance(), 60);
-					}
 				}
 			}.runTaskLater(NovaMain.getInstance(), 10L);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerQuit(PlayerQuitEvent e) {
-		if (GameManager.getInstance().isEnabled()) {
-			if (GameManager.getInstance().hasGame()) {
-				if (NovaMain.getInstance().hasLabyMod()) {
-					NovaLabymodAPI.sendCurrentPlayingGamemode(e.getPlayer(), false, GameManager.getInstance().getActiveGame().getDisplayName());
-					NovaLabymodAPI.updateGameInfo(e.getPlayer(), false, "", 0, 0);
-				}
-			}
 		}
 	}
 }
